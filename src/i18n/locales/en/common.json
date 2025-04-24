@@ -1,0 +1,259 @@
+{
+    "common": {
+        "welcome": "Welcome to Le Loi Secondary School",
+        "login": "Login",
+        "register": "Register",
+        "logout": "Logout",
+        "profile": "Profile",
+        "settings": "Settings",
+        "school_name": "Le Loi Secondary School",
+        "year": "Academic Year 2025-2026",
+        "copyright": "© {year} Le Loi Secondary School. All rights reserved.",
+        "back": "Back",
+        "next": "Next",
+        "cancel": "Cancel",
+        "save": "Save",
+        "delete": "Delete",
+        "edit": "Edit",
+        "submit": "Submit",
+        "loading": "Loading...",
+        "required": "Required",
+        "error": "Error",
+        "success": "Success"
+    },
+    "nav": {
+        "home": "Home",
+        "about": "About",
+        "contact": "Contact",
+        "news": "News",
+        "events": "Events",
+        "toggle_menu": "Toggle mobile menu"
+    },
+    "auth": {
+        "email": "Email",
+        "password": "Password",
+        "forgot_password": "Forgot password?",
+        "remember_me": "Remember me",
+        "user_login": "User Login",
+        "user_register": "User Registration",
+        "admin_login": "Admin Login",
+        "auth_register": "Register Account",
+        "login_success": "Login successful",
+        "login_failed": "Login failed",
+        "login_title": "Login to system",
+        "login_description": "Please login to continue",
+        "invalid_credentials": "Invalid email or password",
+        "required_field": "This field is required",
+        "invalid_email": "Invalid email",
+        "password_min_length": "Password must be at least 8 characters",
+        "login_btn": "Login",
+        "no_account": "Don't have an account?",
+        "create_account": "Create new account"
+    },
+    "landing": {
+        "hero": {
+            "title": "Le Loi Secondary School Admission System",
+            "description": "A comprehensive online solution that simplifies the admission process for both parents and school administrators, from registration to final confirmation.",
+            "login_button": "Login",
+            "register_button": "Create Account",
+            "timeline_title": "Admission Timeline",
+            "timeline": {
+                "registration": "{{start}} - {{end}}",
+                "registration_start": "Jun 1, 2025",
+                "registration_end": "Jun 30, 2025"
+            }
+        },
+        "features": {
+            "title": "Modern Admission Process",
+            "description": "Our admission management system simplifies the process from registration to final results",
+            "online_registration": {
+                "title": "Online Registration",
+                "description": "Fill out information online and upload necessary documents without visiting the school."
+            },
+            "auto_verification": {
+                "title": "Automatic Verification",
+                "description": "System automatically extracts information from academic records and evaluates entry requirements."
+            },
+            "clear_schedule": {
+                "title": "Clear Schedule",
+                "description": "Track application deadlines and receive accurate exam time notifications."
+            }
+        },
+        "how_it_works": {
+            "title": "How It Works",
+            "description": "The admission process is optimized to save time for both parents and school",
+            "steps": {
+                "register": {
+                    "title": "Create Account",
+                    "description": "Parents create an account on the system to start the process"
+                },
+                "fill_form": {
+                    "title": "Fill Registration Form",
+                    "description": "Enter personal and student information using the provided template"
+                },
+                "upload": {
+                    "title": "Upload Records and Certificates",
+                    "description": "Upload scanned copies of academic records and other documents (if any)"
+                },
+                "check_status": {
+                    "title": "Check Application Status",
+                    "description": "Monitor application status after submission"
+                },
+                "submit": {
+                    "title": "Submit Documents in Person",
+                    "description": "If eligible, visit the school to submit documents per appointment"
+                },
+                "result": {
+                    "title": "Receive Final Results",
+                    "description": "Get notification of results and entrance examination information"
+                }
+            }
+        },
+        "user_types": {
+            "parent": {
+                "title": "For Parents",
+                "features": {
+                    "fill_form": "Fill out online admission registration",
+                    "upload_docs": "Upload required files and documents",
+                    "check_status": "Check application status in real-time",
+                    "notifications": "Receive notifications about appointments and results"
+                }
+            },
+            "admin": {
+                "title": "For Administrators",
+                "features": {
+                    "schedule": "Manage admission schedules and appointments",
+                    "manage_students": "Review and approve student applications",
+                    "view_details": "Access detailed information and reports",
+                    "confirm_results": "Confirm and publish results"
+                }
+            }
+        },
+        "faq": {
+            "title": "Frequently Asked Questions",
+            "description": "Answers to common questions about the admission process",
+            "items": {
+                "pdf_upload": {
+                    "question": "Does the system support multiple PDF uploads?",
+                    "answer": "Yes, the system allows uploading academic records in PDF format and other certificates or awards. Each file should not exceed 5MB."
+                },
+                "eligibility": {
+                    "question": "How do I know if my child's application is eligible?",
+                    "answer": "After submitting the online application, the system will automatically extract information and display results in the \"Application Status\" section. If eligible, parents will receive an email invitation to submit documents in person."
+                },
+                "inaccurate_info": {
+                    "question": "What if the extracted information from academic records is inaccurate?",
+                    "answer": "If the system extracts information inaccurately, the application will be placed in pending status. An administrator will review and update the information."
+                },
+                "documents": {
+                    "question": "What documents should I bring when submitting in person?",
+                    "answer": "Parents need to bring original copies of academic records, birth certificate, and certificates or awards (if any) that were uploaded to the system for verification."
+                },
+                "exam_info": {
+                    "question": "How do I find out my child's exam schedule and room?",
+                    "answer": "After the application is confirmed during in-person submission, the system will automatically send an email to parents with complete information about the candidate number, exam room, and schedule."
+                }
+            }
+        },
+        "sections": {
+            "features": {
+                "badge": "Key Features"
+            },
+            "how_it_works": {
+                "badge": "Process"
+            },
+            "user_types": {
+                "badge": "Users",
+                "title": "Solutions for Parents and School",
+                "description": "The system provides specialized tools for each type of user",
+                "parent_login": "Parent Login",
+                "admin_login": "Admin Login"
+            },
+            "faq": {
+                "badge": "FAQ"
+            },
+            "cta": {
+                "title": "Start Your Admission Process Today",
+                "description": "Register an account to access our modern admission process, saving time for both parents and school",
+                "register": "Register Now",
+                "login": "Login"
+            }
+        },
+        "footer": {
+            "description": "Online admission management system for Le Loi Secondary School, simplifying the Grade 6 admission process.",
+            "quick_links": {
+                "title": "Quick Links",
+                "about": "About",
+                "guides": "Guides",
+                "news": "News",
+                "contact": "Contact"
+            },
+            "contact_info": {
+                "title": "Contact Information",
+                "address": "Address: 123 Le Loi Street, District 1, HCMC",
+                "email": "Email: admission@thcsleloi.edu.vn",
+                "phone": "Phone: (028) 3822 5678"
+            }
+        }
+    },
+    "dashboard": {
+        "documents": {
+            "uploadTitle": "Document Upload",
+            "instruction": "Please upload all required documents for your application. Supported formats: PDF, JPG, PNG (max 10MB)",
+            "uploading": "Uploading document...",
+            "uploadComplete": "Upload complete!",
+            "uploadingProgress": "Uploading: {progress}%",
+            "dropzone": "Upload documents",
+            "dragOrClick": "Drag and drop files here or click to select",
+            "dragOrClickMultiple": "Drag and drop files here or click to select multiple files",
+            "supportedFormats": "Supported formats: PDF (for transcripts), PDF, JPG, PNG (for certificates)",
+            "selectType": "Please select document type",
+            "transcriptLabel": "Academic Transcript",
+            "certificateLabel": "Achievement Certificate",
+            "identityLabel": "Identity Document",
+            "otherLabel": "Other Document",
+            "browseFiles": "Browse files",
+            "uploadedTitle": "Uploaded Documents",
+            "uploadedTranscripts": "Uploaded Transcripts",
+            "uploadedCertificates": "Uploaded Certificates",
+            "noDocuments": "No documents uploaded yet",
+            "verified": "Verified",
+            "pending": "Pending verification",
+            "view": "View",
+            "uploadSuccess": "Document uploaded successfully",
+            "multipleCertificatesUploaded": "Certificates uploaded successfully",
+            "uploadFailed": "Failed to upload document",
+            "invalidFile": "Invalid file format or size",
+            "remove": "Remove",
+            "transcriptTitle": "Academic Transcript",
+            "transcriptInstruction": "Upload your academic records (transcript) in PDF format",
+            "certificateTitle": "Achievement Certificates",
+            "certificateInstruction": "Upload any certificates, awards, or other achievements (optional)"
+        },
+        "status": {
+            "applicationStatus": "Application Status",
+            "applicationId": "Application ID",
+            "submissionDate": "Submission Date",
+            "lastUpdated": "Last Updated",
+            "totalPoints": "Total Points",
+            "rejectionReason": "Rejection Reason",
+            "timeline": "Application Timeline",
+            "submitted": "Application Submitted",
+            "submittedDesc": "Your application has been submitted successfully",
+            "verification": "Document Verification",
+            "verificationDesc": "Your documents are being verified by our team",
+            "decision": "Final Decision",
+            "approved": "Application Approved",
+            "approvedDesc": "Congratulations! Your application has been approved",
+            "rejected": "Application Rejected",
+            "rejectedDesc": "Unfortunately, your application has been rejected",
+            "decisionDesc": "Waiting for the final decision on your application",
+            "scheduling": "Schedule Appointment",
+            "documents": "Required Documents",
+            "documentsDesc": "View and manage your uploaded documents",
+            "viewDocuments": "View Documents",
+            "errorTitle": "Error Loading Application",
+            "pending": "Pending"
+        }
+    }
+}

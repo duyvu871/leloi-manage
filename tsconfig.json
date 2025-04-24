@@ -1,0 +1,111 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "declaration": false,
+    "declarationMap": false,
+    "incremental": true,
+    "jsx": "preserve",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "module": "esnext",
+    "resolveJsonModule": true,
+    "strict": true,
+    "target": "es5",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "config": [
+        "./src/global-config.ts"
+      ],
+      "@app/*": [
+        "./src/app/*"
+      ],
+      "@api/*": [
+        "./src/api/*"
+      ],
+      "@mock": [
+        "./src/mock/*"
+      ],
+      "@component/*": [
+        "./src/components/*"
+      ],
+      "@global/*": [
+        "./src/global/*"
+      ],
+      "@constant/*": [
+        "./src/constants/*"
+      ],
+      "@context/*": [
+        "./src/contexts/*"
+      ],
+      "@layout/*": [
+        "./src/layouts/*"
+      ],
+      "@provider/*": [
+        "./src/providers/*"
+      ],
+      "@service/*": [
+        "./src/services/*"
+      ],
+      "@section/*": [
+        "./src/sections/*"
+      ],
+      "@store/*": [
+        "./src/stores/*"
+      ],
+      "@container/*": [
+        "./src/containers/*"
+      ],
+      "@route/*": [
+        "./src/routes/*"
+      ],
+      "@schema/*": [
+        "./src/schemas/*"
+      ],
+      "@lib/*": [
+        "./src/libs/*"
+      ],
+      "@page/*": [
+        "./src/pages/*"
+      ],
+      "@style/*": [
+        "./src/styles/*"
+      ],
+      "@util/*": [
+        "./src/utils/*"
+      ],
+      "@hook/*": [
+        "./src/hooks/*"
+      ],
+      "@type/*": [
+        "./src/types/*"
+      ]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "isolatedModules": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "**/*.md",
+    "node_modules"
+  ]
+}

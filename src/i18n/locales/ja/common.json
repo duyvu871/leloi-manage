@@ -1,0 +1,259 @@
+{
+    "common": {
+        "welcome": "レ・ロイ中学校へようこそ",
+        "login": "ログイン",
+        "register": "登録",
+        "logout": "ログアウト",
+        "profile": "プロフィール",
+        "settings": "設定",
+        "school_name": "レ・ロイ中学校",
+        "year": "2025-2026学年度",
+        "copyright": "© {year} レ・ロイ中学校. All rights reserved.",
+        "back": "戻る",
+        "next": "次へ",
+        "cancel": "キャンセル",
+        "save": "保存",
+        "delete": "削除",
+        "edit": "編集",
+        "submit": "提出",
+        "loading": "読み込み中...",
+        "required": "必須",
+        "error": "エラー",
+        "success": "成功"
+    },
+    "nav": {
+        "home": "ホーム",
+        "about": "学校紹介",
+        "contact": "お問い合わせ",
+        "news": "ニュース",
+        "events": "イベント",
+        "toggle_menu": "メニュー切替"
+    },
+    "auth": {
+        "email": "メールアドレス",
+        "password": "パスワード",
+        "forgot_password": "パスワードをお忘れですか？",
+        "remember_me": "ログイン情報を記憶する",
+        "user_login": "ユーザーログイン",
+        "user_register": "ユーザー登録",
+        "admin_login": "管理者ログイン",
+        "auth_register": "アカウント登録",
+        "login_success": "ログイン成功",
+        "login_failed": "ログイン失敗",
+        "login_title": "システムにログイン",
+        "login_description": "続行するにはログインしてください",
+        "invalid_credentials": "メールアドレスまたはパスワードが無効です",
+        "required_field": "このフィールドは必須です",
+        "invalid_email": "無効なメールアドレス",
+        "password_min_length": "パスワードは8文字以上である必要があります",
+        "login_btn": "ログイン",
+        "no_account": "アカウントをお持ちでないですか？",
+        "create_account": "新しいアカウントを作成"
+    },
+    "landing": {
+        "hero": {
+            "title": "レ・ロイ中学校入学管理システム",
+            "description": "登録から最終確認まで、保護者と学校管理者の両方の入学プロセスを簡素化する包括的なオンラインソリューション。",
+            "login_button": "ログイン",
+            "register_button": "アカウント作成",
+            "timeline_title": "入学タイムライン",
+            "timeline": {
+                "registration": "{{start}} - {{end}}",
+                "registration_start": "2025年6月1日",
+                "registration_end": "2025年6月30日"
+            }
+        },
+        "features": {
+            "title": "モダンな入学プロセス",
+            "description": "当校の入学管理システムは、登録から最終結果までのプロセスを簡素化します",
+            "online_registration": {
+                "title": "オンライン登録",
+                "description": "学校に行かなくても、オンラインで情報を入力し、必要な書類をアップロードできます。"
+            },
+            "auto_verification": {
+                "title": "自動検証",
+                "description": "システムは学業記録から情報を自動的に抽出し、入学要件を評価します。"
+            },
+            "clear_schedule": {
+                "title": "明確なスケジュール",
+                "description": "申請期限を追跡し、試験時間に関する正確な通知を受け取ります。"
+            }
+        },
+        "how_it_works": {
+            "title": "システムの仕組み",
+            "description": "入学プロセスは保護者と学校の両方の時間を節約するために最適化されています",
+            "steps": {
+                "register": {
+                    "title": "アカウント作成",
+                    "description": "保護者がシステムにアカウントを作成してプロセスを開始します"
+                },
+                "fill_form": {
+                    "title": "登録フォームに記入",
+                    "description": "提供されたテンプレートを使用して個人情報と学生情報を入力します"
+                },
+                "upload": {
+                    "title": "成績証明書と証明書をアップロード",
+                    "description": "学業記録やその他の書類のスキャンコピーをアップロード（該当する場合）"
+                },
+                "check_status": {
+                    "title": "申請状況の確認",
+                    "description": "提出後に申請状況を監視します"
+                },
+                "submit": {
+                    "title": "書類を直接提出",
+                    "description": "資格がある場合は、予約に従って学校に書類を提出します"
+                },
+                "result": {
+                    "title": "最終結果を受け取る",
+                    "description": "結果と入学試験情報の通知を受け取ります"
+                }
+            }
+        },
+        "user_types": {
+            "parent": {
+                "title": "保護者向け",
+                "features": {
+                    "fill_form": "オンライン入学登録に記入",
+                    "upload_docs": "必要なファイルと書類をアップロード",
+                    "check_status": "リアルタイムで申請状況を確認",
+                    "notifications": "予約と結果に関する通知を受け取る"
+                }
+            },
+            "admin": {
+                "title": "管理者向け",
+                "features": {
+                    "schedule": "入学スケジュールと予約を管理",
+                    "manage_students": "学生の申請を確認および承認",
+                    "view_details": "詳細情報とレポートにアクセス",
+                    "confirm_results": "結果を確認して公開"
+                }
+            }
+        },
+        "faq": {
+            "title": "よくある質問",
+            "description": "入学プロセスに関するよくある質問への回答",
+            "items": {
+                "pdf_upload": {
+                    "question": "システムは複数のPDFアップロードをサポートしていますか？",
+                    "answer": "はい、システムはPDF形式の学業記録や他の証明書または賞状をアップロードできます。各ファイルは5MBを超えてはいけません。"
+                },
+                "eligibility": {
+                    "question": "子どもの申請が資格を満たしているかどうかをどのように知ることができますか？",
+                    "answer": "オンライン申請を提出すると、システムは自動的に情報を抽出し、「申請状況」セクションに結果を表示します。資格がある場合、保護者は書類を直接提出するための招待メールを受け取ります。"
+                },
+                "inaccurate_info": {
+                    "question": "学業記録から抽出された情報が不正確な場合はどうなりますか？",
+                    "answer": "システムが情報を不正確に抽出した場合、申請は保留状態になります。管理者が情報を確認して更新します。"
+                },
+                "documents": {
+                    "question": "直接提出する際にはどのような書類を持参すべきですか？",
+                    "answer": "保護者は、システムにアップロードした学業記録、出生証明書、および証明書または賞状（該当する場合）の原本を検証のために持参する必要があります。"
+                },
+                "exam_info": {
+                    "question": "子どもの試験スケジュールと教室をどのように知ることができますか？",
+                    "answer": "直接提出の際に申請が確認された後、システムは保護者に候補者番号、試験室、およびスケジュールに関する完全な情報を含むメールを自動的に送信します。"
+                }
+            }
+        },
+        "sections": {
+            "features": {
+                "badge": "主な特徴"
+            },
+            "how_it_works": {
+                "badge": "プロセス"
+            },
+            "user_types": {
+                "badge": "ユーザー",
+                "title": "保護者と学校のためのソリューション",
+                "description": "システムは各ユーザータイプに特化したツールを提供します",
+                "parent_login": "保護者ログイン",
+                "admin_login": "管理者ログイン"
+            },
+            "faq": {
+                "badge": "FAQ"
+            },
+            "cta": {
+                "title": "今日から入学プロセスを始めましょう",
+                "description": "アカウントを登録して、保護者と学校の両方の時間を節約する当校の最新の入学プロセスにアクセスしましょう",
+                "register": "今すぐ登録",
+                "login": "ログイン"
+            }
+        },
+        "footer": {
+            "description": "レ・ロイ中学校のオンライン入学管理システムで、6年生の入学プロセスを簡素化します。",
+            "quick_links": {
+                "title": "クイックリンク",
+                "about": "学校紹介",
+                "guides": "ガイド",
+                "news": "ニュース",
+                "contact": "お問い合わせ"
+            },
+            "contact_info": {
+                "title": "連絡先",
+                "address": "住所：ホーチミン市1区レ・ロイ通り123",
+                "email": "メール：admission@thcsleloi.edu.vn",
+                "phone": "電話：(028) 3822 5678"
+            }
+        }
+    },
+    "dashboard": {
+        "documents": {
+            "uploadTitle": "書類アップロード",
+            "instruction": "申請に必要なすべての書類をアップロードしてください。サポートされている形式：PDF、JPG、PNG（最大10MB）",
+            "uploading": "書類をアップロード中...",
+            "uploadComplete": "アップロード完了！",
+            "uploadingProgress": "アップロード中：{progress}%",
+            "dropzone": "書類をアップロード",
+            "dragOrClick": "ここにファイルをドラッグ＆ドロップするか、クリックして選択",
+            "dragOrClickMultiple": "ここにファイルをドラッグ＆ドロップするか、クリックして複数選択",
+            "supportedFormats": "対応形式：PDF（成績証明書用）、PDF、JPG、PNG（証明書用）",
+            "selectType": "書類の種類を選択してください",
+            "transcriptLabel": "成績証明書",
+            "certificateLabel": "表彰状・証明書",
+            "identityLabel": "身分証明書",
+            "otherLabel": "その他の書類",
+            "browseFiles": "ファイルを参照",
+            "uploadedTitle": "アップロード済み書類",
+            "uploadedTranscripts": "アップロード済み成績証明書",
+            "uploadedCertificates": "アップロード済み証明書",
+            "noDocuments": "まだアップロードされた書類はありません",
+            "verified": "検証済み",
+            "pending": "検証待ち",
+            "view": "表示",
+            "uploadSuccess": "書類のアップロードに成功しました",
+            "multipleCertificatesUploaded": "証明書のアップロードに成功しました",
+            "uploadFailed": "書類のアップロードに失敗しました",
+            "invalidFile": "無効なファイル形式またはサイズ",
+            "remove": "削除",
+            "transcriptTitle": "成績証明書",
+            "transcriptInstruction": "成績証明書をPDF形式でアップロードしてください",
+            "certificateTitle": "表彰状・証明書",
+            "certificateInstruction": "表彰状、証明書またはその他の実績をアップロードしてください（任意）"
+        },
+        "status": {
+            "applicationStatus": "申請状況",
+            "applicationId": "申請ID",
+            "submissionDate": "提出日",
+            "lastUpdated": "最終更新",
+            "totalPoints": "合計ポイント",
+            "rejectionReason": "却下理由",
+            "timeline": "申請タイムライン",
+            "submitted": "申請提出済み",
+            "submittedDesc": "申請が正常に提出されました",
+            "verification": "書類検証",
+            "verificationDesc": "書類は当校のチームによって検証されています",
+            "decision": "最終決定",
+            "approved": "申請承認",
+            "approvedDesc": "おめでとうございます！申請が承認されました",
+            "rejected": "申請却下",
+            "rejectedDesc": "残念ながら、申請が却下されました",
+            "decisionDesc": "申請に関する最終決定を待っています",
+            "scheduling": "予約スケジュール",
+            "documents": "必要書類",
+            "documentsDesc": "アップロードした書類の表示と管理",
+            "viewDocuments": "書類を表示",
+            "errorTitle": "申請の読み込みエラー",
+            "pending": "処理中"
+        }
+    }
+}

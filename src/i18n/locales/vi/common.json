@@ -1,0 +1,259 @@
+{
+    "common": {
+        "welcome": "Chào mừng đến với Trường THCS Lê Lợi",
+        "login": "Đăng nhập",
+        "register": "Đăng ký",
+        "logout": "Đăng xuất",
+        "profile": "Hồ sơ",
+        "settings": "Cài đặt",
+        "school_name": "Trường THCS Lê Lợi",
+        "year": "Năm học 2025-2026",
+        "copyright": "© {year} Trường THCS Lê Lợi. Tất cả quyền được bảo lưu.",
+        "back": "Quay lại",
+        "next": "Tiếp theo",
+        "cancel": "Hủy",
+        "save": "Lưu",
+        "delete": "Xóa",
+        "edit": "Sửa",
+        "submit": "Gửi",
+        "loading": "Đang tải...",
+        "required": "Bắt buộc",
+        "error": "Lỗi",
+        "success": "Thành công"
+    },
+    "nav": {
+        "home": "Trang chủ",
+        "about": "Giới thiệu",
+        "contact": "Liên hệ",
+        "news": "Tin tức",
+        "events": "Sự kiện",
+        "toggle_menu": "Mở/đóng menu"
+    },
+    "auth": {
+        "email": "Email",
+        "password": "Mật khẩu",
+        "forgot_password": "Quên mật khẩu?",
+        "remember_me": "Ghi nhớ đăng nhập",
+        "user_login": "Đăng nhập người dùng",
+        "user_register": "Đăng ký người dùng",
+        "admin_login": "Đăng nhập quản trị viên",
+        "auth_register": "Đăng ký tài khoản",
+        "login_success": "Đăng nhập thành công",
+        "login_failed": "Đăng nhập thất bại",
+        "login_title": "Đăng nhập vào hệ thống",
+        "login_description": "Vui lòng đăng nhập để tiếp tục",
+        "invalid_credentials": "Email hoặc mật khẩu không hợp lệ",
+        "required_field": "Trường này là bắt buộc",
+        "invalid_email": "Email không hợp lệ",
+        "password_min_length": "Mật khẩu phải có ít nhất 8 ký tự",
+        "login_btn": "Đăng nhập",
+        "no_account": "Chưa có tài khoản?",
+        "create_account": "Tạo tài khoản mới"
+    },
+    "landing": {
+        "hero": {
+            "title": "Hệ thống Tuyển sinh Trường THCS Lê Lợi",
+            "description": "Giải pháp trực tuyến toàn diện giúp đơn giản hóa quy trình tuyển sinh cho cả phụ huynh và ban quản lý nhà trường, từ đăng ký đến xác nhận cuối cùng.",
+            "login_button": "Đăng nhập",
+            "register_button": "Tạo tài khoản",
+            "timeline_title": "Thời gian tuyển sinh",
+            "timeline": {
+                "registration": "{{start}} - {{end}}",
+                "registration_start": "01/06/2025",
+                "registration_end": "30/06/2025"
+            }
+        },
+        "features": {
+            "title": "Quy trình tuyển sinh hiện đại",
+            "description": "Hệ thống quản lý tuyển sinh của chúng tôi đơn giản hóa quy trình từ đăng ký đến kết quả cuối cùng",
+            "online_registration": {
+                "title": "Đăng ký trực tuyến",
+                "description": "Điền thông tin trực tuyến và tải lên các tài liệu cần thiết mà không cần đến trường."
+            },
+            "auto_verification": {
+                "title": "Xác minh tự động",
+                "description": "Hệ thống tự động trích xuất thông tin từ hồ sơ học tập và đánh giá các yêu cầu đầu vào."
+            },
+            "clear_schedule": {
+                "title": "Lịch trình rõ ràng",
+                "description": "Theo dõi thời hạn nộp hồ sơ và nhận thông báo chính xác về thời gian thi."
+            }
+        },
+        "how_it_works": {
+            "title": "Cách thức hoạt động",
+            "description": "Quy trình tuyển sinh được tối ưu hóa để tiết kiệm thời gian cho cả phụ huynh và nhà trường",
+            "steps": {
+                "register": {
+                    "title": "Tạo tài khoản",
+                    "description": "Phụ huynh tạo tài khoản trên hệ thống để bắt đầu quy trình"
+                },
+                "fill_form": {
+                    "title": "Điền mẫu đăng ký",
+                    "description": "Nhập thông tin cá nhân và học sinh theo mẫu đã cung cấp"
+                },
+                "upload": {
+                    "title": "Tải lên học bạ và chứng chỉ",
+                    "description": "Tải lên bản scan học bạ và các tài liệu khác (nếu có)"
+                },
+                "check_status": {
+                    "title": "Kiểm tra trạng thái hồ sơ",
+                    "description": "Theo dõi trạng thái hồ sơ sau khi nộp"
+                },
+                "submit": {
+                    "title": "Nộp tài liệu trực tiếp",
+                    "description": "Nếu đủ điều kiện, đến trường nộp tài liệu theo lịch hẹn"
+                },
+                "result": {
+                    "title": "Nhận kết quả cuối cùng",
+                    "description": "Nhận thông báo kết quả và thông tin thi tuyển"
+                }
+            }
+        },
+        "user_types": {
+            "parent": {
+                "title": "Dành cho phụ huynh",
+                "features": {
+                    "fill_form": "Điền đơn đăng ký tuyển sinh trực tuyến",
+                    "upload_docs": "Tải lên các tệp và tài liệu cần thiết",
+                    "check_status": "Kiểm tra trạng thái hồ sơ theo thời gian thực",
+                    "notifications": "Nhận thông báo về lịch hẹn và kết quả"
+                }
+            },
+            "admin": {
+                "title": "Dành cho quản trị viên",
+                "features": {
+                    "schedule": "Quản lý lịch tuyển sinh và lịch hẹn",
+                    "manage_students": "Xem xét và phê duyệt hồ sơ học sinh",
+                    "view_details": "Truy cập thông tin chi tiết và báo cáo",
+                    "confirm_results": "Xác nhận và công bố kết quả"
+                }
+            }
+        },
+        "faq": {
+            "title": "Câu hỏi thường gặp",
+            "description": "Câu trả lời cho các câu hỏi phổ biến về quy trình tuyển sinh",
+            "items": {
+                "pdf_upload": {
+                    "question": "Hệ thống có hỗ trợ tải lên nhiều tệp PDF không?",
+                    "answer": "Có, hệ thống cho phép tải lên học bạ dạng PDF và các chứng chỉ hoặc giải thưởng khác. Mỗi tệp không được vượt quá 5MB."
+                },
+                "eligibility": {
+                    "question": "Làm thế nào để biết hồ sơ của con tôi có đủ điều kiện không?",
+                    "answer": "Sau khi gửi đơn trực tuyến, hệ thống sẽ tự động trích xuất thông tin và hiển thị kết quả trong phần \"Trạng thái hồ sơ\". Nếu đủ điều kiện, phụ huynh sẽ nhận được email mời nộp tài liệu trực tiếp."
+                },
+                "inaccurate_info": {
+                    "question": "Điều gì sẽ xảy ra nếu thông tin trích xuất từ học bạ không chính xác?",
+                    "answer": "Nếu hệ thống trích xuất thông tin không chính xác, hồ sơ sẽ được đặt trong trạng thái chờ xử lý. Quản trị viên sẽ xem xét và cập nhật thông tin."
+                },
+                "documents": {
+                    "question": "Tôi nên mang theo những tài liệu gì khi nộp trực tiếp?",
+                    "answer": "Phụ huynh cần mang theo bản gốc học bạ, giấy khai sinh và các chứng chỉ hoặc giải thưởng (nếu có) đã được tải lên hệ thống để xác minh."
+                },
+                "exam_info": {
+                    "question": "Làm thế nào để biết lịch thi và phòng thi của con tôi?",
+                    "answer": "Sau khi hồ sơ được xác nhận trong quá trình nộp trực tiếp, hệ thống sẽ tự động gửi email cho phụ huynh với đầy đủ thông tin về số báo danh, phòng thi và lịch thi."
+                }
+            }
+        },
+        "sections": {
+            "features": {
+                "badge": "Tính năng chính"
+            },
+            "how_it_works": {
+                "badge": "Quy trình"
+            },
+            "user_types": {
+                "badge": "Người dùng",
+                "title": "Giải pháp cho phụ huynh và nhà trường",
+                "description": "Hệ thống cung cấp các công cụ chuyên biệt cho từng loại người dùng",
+                "parent_login": "Đăng nhập phụ huynh",
+                "admin_login": "Đăng nhập quản trị viên"
+            },
+            "faq": {
+                "badge": "Hỏi đáp"
+            },
+            "cta": {
+                "title": "Bắt đầu quy trình tuyển sinh ngay hôm nay",
+                "description": "Đăng ký tài khoản để truy cập quy trình tuyển sinh hiện đại của chúng tôi, tiết kiệm thời gian cho cả phụ huynh và nhà trường",
+                "register": "Đăng ký ngay",
+                "login": "Đăng nhập"
+            }
+        },
+        "footer": {
+            "description": "Hệ thống quản lý tuyển sinh trực tuyến cho Trường THCS Lê Lợi, đơn giản hóa quy trình tuyển sinh lớp 6.",
+            "quick_links": {
+                "title": "Liên kết nhanh",
+                "about": "Giới thiệu",
+                "guides": "Hướng dẫn",
+                "news": "Tin tức",
+                "contact": "Liên hệ"
+            },
+            "contact_info": {
+                "title": "Thông tin liên hệ",
+                "address": "Địa chỉ: 123 Đường Lê Lợi, Quận 1, TPHCM",
+                "email": "Email: admission@thcsleloi.edu.vn",
+                "phone": "Điện thoại: (028) 3822 5678"
+            }
+        }
+    },
+    "dashboard": {
+        "documents": {
+            "uploadTitle": "Tải lên tài liệu",
+            "instruction": "Vui lòng tải lên tất cả các tài liệu cần thiết cho hồ sơ của bạn. Định dạng được hỗ trợ: PDF, JPG, PNG (tối đa 10MB)",
+            "uploading": "Đang tải tài liệu...",
+            "uploadComplete": "Tải lên thành công!",
+            "uploadingProgress": "Đang tải lên: {progress}%",
+            "dropzone": "Tải lên tài liệu",
+            "dragOrClick": "Kéo và thả tệp vào đây hoặc nhấp để chọn",
+            "dragOrClickMultiple": "Kéo và thả các tệp vào đây hoặc nhấp để chọn nhiều tệp",
+            "supportedFormats": "Định dạng được hỗ trợ: PDF (cho học bạ), PDF, JPG, PNG (cho chứng chỉ)",
+            "selectType": "Vui lòng chọn loại tài liệu",
+            "transcriptLabel": "Học bạ",
+            "certificateLabel": "Chứng chỉ thành tích",
+            "identityLabel": "Giấy tờ tùy thân",
+            "otherLabel": "Tài liệu khác",
+            "browseFiles": "Duyệt tệp",
+            "uploadedTitle": "Tài liệu đã tải lên",
+            "uploadedTranscripts": "Học bạ đã tải lên",
+            "uploadedCertificates": "Chứng chỉ đã tải lên",
+            "noDocuments": "Chưa có tài liệu nào được tải lên",
+            "verified": "Đã xác minh",
+            "pending": "Đang chờ xác minh",
+            "view": "Xem",
+            "uploadSuccess": "Tải lên tài liệu thành công",
+            "multipleCertificatesUploaded": "Tải lên các chứng chỉ thành công",
+            "uploadFailed": "Không thể tải lên tài liệu",
+            "invalidFile": "Định dạng hoặc kích thước tệp không hợp lệ",
+            "remove": "Xóa",
+            "transcriptTitle": "Học bạ",
+            "transcriptInstruction": "Tải lên học bạ của bạn ở định dạng PDF",
+            "certificateTitle": "Chứng chỉ thành tích",
+            "certificateInstruction": "Tải lên bất kỳ chứng chỉ, giải thưởng hoặc thành tích khác (không bắt buộc)"
+        },
+        "status": {
+            "applicationStatus": "Trạng thái hồ sơ",
+            "applicationId": "Mã hồ sơ",
+            "submissionDate": "Ngày nộp",
+            "lastUpdated": "Cập nhật lần cuối",
+            "totalPoints": "Tổng điểm",
+            "rejectionReason": "Lý do từ chối",
+            "timeline": "Tiến trình xử lý hồ sơ",
+            "submitted": "Đã nộp hồ sơ",
+            "submittedDesc": "Hồ sơ của bạn đã được nộp thành công",
+            "verification": "Xác minh tài liệu",
+            "verificationDesc": "Tài liệu của bạn đang được đội ngũ của chúng tôi xác minh",
+            "decision": "Quyết định cuối cùng",
+            "approved": "Hồ sơ được chấp nhận",
+            "approvedDesc": "Xin chúc mừng! Hồ sơ của bạn đã được chấp nhận",
+            "rejected": "Hồ sơ bị từ chối",
+            "rejectedDesc": "Rất tiếc, hồ sơ của bạn đã bị từ chối",
+            "decisionDesc": "Đang chờ quyết định cuối cùng về hồ sơ của bạn",
+            "scheduling": "Đặt lịch hẹn",
+            "documents": "Tài liệu yêu cầu",
+            "documentsDesc": "Xem và quản lý các tài liệu đã tải lên",
+            "viewDocuments": "Xem tài liệu",
+            "errorTitle": "Lỗi khi tải hồ sơ",
+            "pending": "Đang chờ xử lý"
+        }
+    }
+}
