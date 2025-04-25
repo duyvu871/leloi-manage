@@ -65,8 +65,7 @@ export default async function RootLayout({ children, params }: LandingLayoutProp
 						<JotaiProvider>
 							<MantineProviderClient>
 								<QueryClientProvider>
-									<AuthProvider>
-										<ToastLayout>
+								<ToastLayout>
 											<div className="min-h-screen flex flex-col bg-gray-100">
 												{/* Header */}
 												<header className="bg-primary text-white">
@@ -102,7 +101,6 @@ export default async function RootLayout({ children, params }: LandingLayoutProp
 												</footer>
 											</div>
 										</ToastLayout>
-									</AuthProvider>
 								</QueryClientProvider>
 							</MantineProviderClient>
 						</JotaiProvider>
