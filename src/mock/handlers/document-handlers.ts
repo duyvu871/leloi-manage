@@ -1,8 +1,8 @@
 import { Document, TranscriptData } from '@type/document';
-import { mockDocuments } from '../data/applications';
+// import { mockDocuments } from '../data/applications';
 
 // Mảng lưu trữ dữ liệu tài liệu
-let documentData: Document[] = mockDocuments;
+let documentData: Document[] = [];
 
 // Hàm lấy danh sách tài liệu của học sinh
 export const getStudentDocuments = (studentId: string) => {

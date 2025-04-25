@@ -1,10 +1,10 @@
 import { Student } from '@type/student';
 import { Application } from '@type/application';
-import {mockStudents} from '../data/students';
+// import {mockStudents} from '../data/students';
 import { mockApplications } from '../data/applications';
 
 // Mảng lưu trữ dữ liệu học sinh
-let studentData = [...mockStudents];
+let studentData: any[] = [];
 
 // Hàm lấy danh sách học sinh
 export const getStudents = () => {

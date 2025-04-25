@@ -1,4 +1,4 @@
-// import type { ParentUser, ManagerUser, ApplicationStatus } from 'src/schemas/user/dto';
+// import type { ParentUser, ManagerUser } from 'src/schemas/user/dto';
 
 // export const mockParents: (ParentUser & { password: string })[] = [
 //     {
