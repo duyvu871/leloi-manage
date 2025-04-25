@@ -10,7 +10,7 @@ import { checkCookie } from '@lib/apis/base';
 import { useMock } from 'config';
 import RingLoader from '@component/ui/loader';
 import { userAtom } from '@store/user';
-import { mockParents } from '@/mock/data/user';
+// import { mockParents } from '@/mock/data/user';
 import { getProfile } from '@/libs/apis/auth';
 
 export default function AuthProvider({ children }: PropsWithChildren) {
