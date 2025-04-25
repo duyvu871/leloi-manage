@@ -36,7 +36,7 @@ export const API_ROUTES = {
             COMMITMENT: '/registration/commitment',
             PRIORITY_POINT: '/registration/priority-point',
             COMPETITION_RESULTS: '/registration/competition-results',
-            DOCUMENT_UPLOAD: '/registration/document-upload',
+            DOCUMENT_UPLOAD: '/process/document-upload',
             APPLICATION: '/registration/application',
         },
         USER: {
