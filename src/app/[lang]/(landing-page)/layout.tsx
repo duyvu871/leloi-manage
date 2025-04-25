@@ -10,6 +10,8 @@ import type { Metadata } from 'next';
 import { cn } from '@lib/tailwind/tailwind-merge';
 import '@style/global.css';
 import '@mantine/core/styles.css';
+import '@mantine/dates/styles.css';
+import '@mantine/dropzone/styles.css';
 import { ThemeProvider } from '@provider/theme-provider';
 import I18nProvider from '@provider/i18n-provider';
 import { NextIntlClientProvider } from 'next-intl';
