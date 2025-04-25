@@ -1,7 +1,7 @@
 module.exports = {
     apps: [
         {
-            name: 'quan-ly-nha-thuoc',
+            name: 'le-loi',
             script: 'npm run start',
             out_file: "./front-end-out.log",
             error_file: "./front-end-error.log",
