@@ -28,6 +28,7 @@ export const API_ROUTES = {
             FORGOT_PASSWORD: '/auth/forgot-password',
         },
         REGISTRATION: {
+            GET_RESTRATION: '/registration',
             SUBMIT: '/registration/submit',
             STATUS: '/registration/status',
             STUDENT: '/registration/student',

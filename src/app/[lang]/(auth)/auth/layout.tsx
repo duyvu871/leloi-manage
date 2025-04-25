@@ -15,6 +15,7 @@ import I18nProvider from '@provider/i18n-provider';
 import { NextIntlClientProvider } from 'next-intl';
 import Header from '@component/shared/header/header';
 import QueryClientProvider from '@provider/query-client-provider';
+import ToastLayout from '@/components/shared/layout/toast';
 
 export const metadata: Metadata = {
 	title: 'Trường THCS Lê Lợi',
@@ -55,12 +56,14 @@ export default async function RootLayout({ children, params }: LandingLayoutProp
 						forcedTheme={'light'}>
 						<MantineProviderClient>
 							<QueryClientProvider>
-								<div className="min-h-screen flex flex-col">
-									<Header />
-									<main className="flex-1 h-full flex items-center justify-center bg-zinc-50">
-                                        {children}
-									</main>
-								</div>
+								<ToastLayout>
+									<div className='min-h-screen flex flex-col'>
+										<Header />
+										<main className='flex-1 h-full flex items-center justify-center bg-zinc-50'>
+											{children}
+										</main>
+									</div>
+								</ToastLayout>
 							</QueryClientProvider>
 						</MantineProviderClient>
 					</ThemeProvider>

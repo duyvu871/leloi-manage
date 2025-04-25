@@ -7,11 +7,13 @@ import {
     CreatePriorityPointDto,
     CreateCompetitionResultDto,
     RegistrationResponseDto,
-    RegistrationFormData
+    RegistrationFormData,
+    convertFormToDbDtos
 } from "@/schemas/registration/dto";
 import { SuccessResponse } from "@/types/api/response";
 import { axiosRequestWithException } from "@lib/apis/base";
 import { Student } from "@/types/student";
+
 
 // Type definition for registration status query
 export interface RegistrationStatusQueryDto {
@@ -35,8 +37,7 @@ export const submitRegistration = async (formData: RegistrationFormData, userId:
         method: 'post',
         url: API_ROUTES.v1.REGISTRATION.SUBMIT,
         data: {
-            formData,
-            userId
+            ...formData,
         }
     };
     

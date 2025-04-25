@@ -19,7 +19,8 @@
         "loading": "Loading...",
         "required": "Required",
         "error": "Error",
-        "success": "Success"
+        "success": "Success",
+        "account": "Account"
     },
     "nav": {
         "home": "Home",
@@ -49,6 +50,22 @@
         "login_btn": "Login",
         "no_account": "Don't have an account?",
         "create_account": "Create new account"
+    },
+    "parent": {
+        "student": "Student",
+        "manageStudents": "Manage Students",
+        "addStudent": "Add New Student",
+        "editStudent": "Edit Student Information",
+        "deleteStudent": "Delete Student",
+        "studentList": "Student List"
+    },
+    "manager": {
+        "management": "Management",
+        "dashboard": "Dashboard",
+        "applications": "Applications",
+        "students": "Students",
+        "schedule": "Schedule",
+        "settings": "System Settings"
     },
     "landing": {
         "hero": {
@@ -231,6 +248,15 @@
             "certificateInstruction": "Upload any certificates, awards, or other achievements (optional)"
         },
         "status": {
+            "userInfo": "User Information",
+            "studentInfo": "Student Information",
+            "studentName": "Full Name",
+            "studentId": "Student ID",
+            "dateOfBirth": "Date of Birth",
+            "gender": "Gender",
+            "noApplication": "No Application Found",
+            "noApplicationDesc": "You have not created an application for this student yet. Please create an application to continue the registration process.",
+            "createApplication": "Create Application",
             "applicationStatus": "Application Status",
             "applicationId": "Application ID",
             "submissionDate": "Submission Date",
@@ -239,14 +265,14 @@
             "rejectionReason": "Rejection Reason",
             "timeline": "Application Timeline",
             "submitted": "Application Submitted",
-            "submittedDesc": "Your application has been submitted successfully",
+            "submittedDesc": "Your application has been successfully submitted and is awaiting review.",
             "verification": "Document Verification",
-            "verificationDesc": "Your documents are being verified by our team",
+            "verificationDesc": "The school is verifying the information in your application.",
             "decision": "Final Decision",
             "approved": "Application Approved",
-            "approvedDesc": "Congratulations! Your application has been approved",
+            "approvedDesc": "Congratulations! Your application has been approved.",
             "rejected": "Application Rejected",
-            "rejectedDesc": "Unfortunately, your application has been rejected",
+            "rejectedDesc": "Unfortunately, your application has been rejected. Please see the rejection reason and contact the school if you have any questions.",
             "decisionDesc": "Waiting for the final decision on your application",
             "scheduling": "Schedule Appointment",
             "documents": "Required Documents",

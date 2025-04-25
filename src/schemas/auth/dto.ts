@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { authCredentialSchema } from "./schema";
 import { CompetitionResult, PriorityPoint } from '@/types/points';
+import { D } from "@tanstack/react-query-devtools/build/legacy/ReactQueryDevtools-Cn7cKi7o";
 
 export type AuthCredentialSchema = z.infer<typeof authCredentialSchema>;
 
@@ -40,9 +41,37 @@ export interface ParentInfoDto {
 export interface ApplicationDto {
     id: number;
     status: string;
+    createdAt: Date;
+    updatedAt: Date;
+    ApplicationDocuments: ApplicationDocumentDto[];
+}
+
+export interface ApplicationDocumentDto {
+    id: number;
+    createdAt: Date;
+    updatedAt: Date;
+    applicationId: number;
+    documentId: number;
+    type: string;
+    status: string;
     isEligible: boolean;
     rejectionReason?: string | null;
     verificationDate?: Date | null;
+
+    document: DocumentDto[];
+}
+
+export interface DocumentDto {
+    id: number;
+    name: string;
+    description?: string | null;
+    url: string;
+    type: string;
+    filePath: string;
+    fileSize: number;
+    mimeType: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface StudentInfoDto {

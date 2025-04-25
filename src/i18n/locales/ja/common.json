@@ -19,7 +19,8 @@
         "loading": "読み込み中...",
         "required": "必須",
         "error": "エラー",
-        "success": "成功"
+        "success": "成功",
+        "account": "アカウント"
     },
     "nav": {
         "home": "ホーム",
@@ -49,6 +50,22 @@
         "login_btn": "ログイン",
         "no_account": "アカウントをお持ちでないですか？",
         "create_account": "新しいアカウントを作成"
+    },
+    "parent": {
+        "student": "生徒",
+        "manageStudents": "生徒の管理",
+        "addStudent": "生徒を追加",
+        "editStudent": "生徒情報を編集",
+        "deleteStudent": "生徒を削除",
+        "studentList": "生徒一覧"
+    },
+    "manager": {
+        "management": "管理",
+        "dashboard": "ダッシュボード",
+        "applications": "申請書",
+        "students": "生徒",
+        "schedule": "スケジュール",
+        "settings": "システム設定"
     },
     "landing": {
         "hero": {
@@ -253,7 +270,20 @@
             "documentsDesc": "アップロードした書類の表示と管理",
             "viewDocuments": "書類を表示",
             "errorTitle": "申請の読み込みエラー",
-            "pending": "処理中"
+            "pending": "処理中",
+            "userInfo": "ユーザー情報",
+            "studentInfo": "生徒情報",
+            "studentName": "氏名",
+            "studentId": "学生番号",
+            "dateOfBirth": "生年月日",
+            "gender": "性別",
+            "noApplication": "申請書が見つかりません",
+            "noApplicationDesc": "この生徒の申請書はまだ作成されていません。登録プロセスを続行するには申請書を作成してください。",
+            "createApplication": "申請書を作成",
+            "submittedDesc": "申請が正常に提出され、審査待ちです。",
+            "verificationDesc": "学校が申請書の情報を確認しています。",
+            "approvedDesc": "おめでとうございます！申請が承認されました。",
+            "rejectedDesc": "残念ながら、申請が却下されました。却下理由をご確認の上、ご質問がある場合は学校にお問い合わせください。"
         }
     }
 }

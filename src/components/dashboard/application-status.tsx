@@ -1,44 +1,51 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { 
-  Card, 
-  Text, 
-  Group, 
-  Badge, 
-  Timeline, 
-  Button, 
+import {
+  Card,
+  Text,
+  Group,
+  Badge,
+  Timeline,
+  Button,
   List,
   Loader,
-  Alert
+  Alert,
+  Avatar,
+  Divider,
+  Box
 } from '@mantine/core';
-import { 
+import {
   IconAlertCircle,
-  IconCheck, 
-  IconX, 
-  IconHourglassHigh, 
+  IconCheck,
+  IconX,
+  IconHourglassHigh,
   IconCalendarEvent,
-  IconFileCheck 
+  IconFileCheck,
+  IconInfoCircle,
+  IconUserCircle
 } from '@tabler/icons-react';
 import { useApplicationManagement } from '@/hooks/client/use-application-management';
-import { useRegistrationContext } from '@/providers/registration-provider';
+import { useRegistration } from '@/providers/registration-provider';
 import { formatPoints } from '@/utils/points-calculator';
 import { useTranslations } from 'next-intl';
 import { ApplicationStatus } from '@/types/registration';
 import { useAtom } from 'jotai';
-import { userAtom } from '@/stores/user';
+import { userAtom, selectedStudentAtom, selectedStudentIndexAtom } from '@/stores/user';
 
 interface ApplicationStatusComponentProps {
   studentId?: number;
   applicationId?: number;
 }
 
-export default function ApplicationStatusComponent({ 
+export default function ApplicationStatusComponent({
   // studentId, 
   // applicationId 
 }: ApplicationStatusComponentProps) {
   const t = useTranslations('dashboard');
   const [user, setUser] = useAtom(userAtom);
+  const [selectedStudent] = useAtom(selectedStudentAtom);
+  const [selectedStudentIndex] = useAtom(selectedStudentIndexAtom);
   const {
     application,
     availableSlots,
@@ -49,12 +56,15 @@ export default function ApplicationStatusComponent({
     assignScheduleSlot
   } = useApplicationManagement();
 
-  const { competitionResults, priorityPoint } = useRegistrationContext();
+  const { competitionResults, priorityPoint } = useRegistration();
 
   // Load application status on component mount
   useEffect(() => {
-    loadApplicationStatus();
-  }, []);
+    if (user?.students[0]?.application?.id) {
+      loadApplicationStatus(user?.students[0]?.application?.id);
+    }
+    // loadAvailableScheduleSlots();
+  }, [user]);
 
   // Load available schedule slots when needed for scheduling
   const handleScheduleClick = async () => {
@@ -93,18 +103,18 @@ export default function ApplicationStatusComponent({
   // Calculate total points
   const calculateTotalPoints = () => {
     let totalPoints = 0;
-    
+
     // Add competition/bonus points (use highest)
     if (competitionResults && competitionResults.length > 0) {
       const highestPoints = Math.max(...competitionResults.map(result => result.points));
       totalPoints += highestPoints;
     }
-    
+
     // Add priority points
     if (priorityPoint) {
       totalPoints += priorityPoint.points;
     }
-    
+
     return totalPoints;
   };
 
@@ -130,9 +140,9 @@ export default function ApplicationStatusComponent({
 
   if (error) {
     return (
-      <Alert 
-        icon={<IconAlertCircle size={16} />} 
-        title={t('status.errorTitle')} 
+      <Alert
+        icon={<IconAlertCircle size={16} />}
+        title={t('status.errorTitle')}
         color="red"
       >
         {error}
@@ -140,175 +150,260 @@ export default function ApplicationStatusComponent({
     );
   }
 
+  const hasApplication = user?.students[0]?.application?.id;
+
   return (
     <div className="space-y-6">
+      {/* User and Student Information Card */}
       <Card shadow="sm" padding="lg" radius="md" withBorder>
         <Card.Section withBorder inheritPadding py="xs">
           <Group>
-            <Text fw={500}>{t('status.applicationStatus')}</Text>
-            <Badge 
-              color={getStatusColor(application?.status)}
-              leftSection={getStatusIcon(application?.status)}
-            >
-              {application?.status === 'approved' 
-                ? t('status.approved') 
-                : application?.status === 'rejected' 
-                  ? t('status.rejected') 
-                  : t('status.pending')
-              }
-            </Badge>
+            <Text fw={500}>{t('status.userInfo')}</Text>
           </Group>
         </Card.Section>
-        
-        <Group grow mt="md">
+
+        <Group mt="md" mb="md">
+          <Avatar
+            size="lg"
+            radius="xl"
+            color="blue"
+            src={undefined}
+          >
+            {user?.fullName ? user.fullName.charAt(0) : <IconUserCircle size={24} />}
+          </Avatar>
           <div>
-            <Text size="sm" color="dimmed">{t('status.applicationId')}</Text>
-            <Text fw={500}>{application?.id || '—'}</Text>
-          </div>
-          
-          <div>
-            <Text size="sm" color="dimmed">{t('status.submissionDate')}</Text>
-            <Text fw={500}>{application?.createdAt 
-              ? formatDate(application.createdAt) 
-              : '—'}
-            </Text>
-          </div>
-          
-          <div>
-            <Text size="sm" color="dimmed">{t('status.lastUpdated')}</Text>
-            <Text fw={500}>{application?.updatedAt 
-              ? formatDate(application.updatedAt) 
-              : '—'}
-            </Text>
+            <Text fw={600}>{user?.fullName || '—'}</Text>
+            <Text size="sm" color="dimmed">{user?.email || '—'}</Text>
           </div>
         </Group>
-        
-        <div className="mt-4">
-          <Text size="sm" color="dimmed">{t('status.totalPoints')}</Text>
-          <Text fw={700} size="xl">{formatPoints(calculateTotalPoints())}</Text>
-        </div>
-        
-        {application?.rejectionReason && (
-          <Alert 
-            icon={<IconAlertCircle size={16} />} 
-            title={t('status.rejectionReason')} 
-            color="red"
-            mt="md"
+
+        {/* <Divider my="sm" /> */}
+
+        {selectedStudent && (
+          <>
+            <Text fw={500} mb="xs">{t('status.studentInfo')}</Text>
+            <Box className='sm:ml-5'>
+              <Group grow>
+                <div>
+                  <Text size="sm" color="dimmed">{t('status.studentName')}</Text>
+                  <Text fw={500}>{selectedStudent.fullName || '—'}</Text>
+                </div>
+                <div>
+                  <Text size="sm" color="dimmed">{t('status.studentId')}</Text>
+                  <Text fw={500}>{selectedStudent.id || '—'}</Text>
+                </div>
+              </Group>
+              <Group grow mt="md">
+                <div>
+                  <Text size="sm" color="dimmed">{t('status.dateOfBirth')}</Text>
+                  <Text fw={500}>{selectedStudent.dateOfBirth
+                    ? new Date(selectedStudent.dateOfBirth).toLocaleDateString('vi-VN')
+                    : '—'}
+                  </Text>
+                </div>
+                <div>
+                  <Text size="sm" color="dimmed">{t('status.gender')}</Text>
+                  <Text fw={500}>{selectedStudent.gender || '—'}</Text>
+                </div>
+              </Group>
+            </Box>
+          </>
+        )}
+      </Card>
+
+      {/* Display warning if no application exists */}
+      {!hasApplication ? (
+        <>
+          <Alert
+            icon={<IconInfoCircle size={16} />}
+            title={t('status.noApplication')}
+            color="yellow"
           >
-            {application.rejectionReason}
+            {t('status.noApplicationDesc')}
           </Alert>
-        )}
-      </Card>
 
-      {/* Timeline of application status */}
-      <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Card.Section withBorder inheritPadding py="xs">
-          <Text fw={500}>{t('status.timeline')}</Text>
-        </Card.Section>
-        
-        <Timeline active={
-          application?.status === 'approved' ? 3 
-          : application?.status === 'rejected' ? 3 
-          : application?.verificationDate ? 2 
-          : 1
-        } bulletSize={24} lineWidth={2} mt="md">
-          <Timeline.Item 
-            bullet={<IconFileCheck size={16} />}
-            title={t('status.submitted')}
+          <Button
+            component="a"
+            href="/dashboard/upload-documents"
+            variant="filled"
             color="blue"
+            fullWidth
+          // className='max-w-xl'
           >
-            <Text color="dimmed" size="sm">{
-              application?.createdAt ? formatDate(application.createdAt) : ''
-            }</Text>
-            <Text size="xs" mt={4}>{t('status.submittedDesc')}</Text>
-          </Timeline.Item>
+            {t('status.createApplication')}
+          </Button>
+        </>
+      ) : (
+        <>
+          <Card shadow="sm" padding="lg" radius="md" withBorder>
+            <Card.Section withBorder inheritPadding py="xs">
+              <Group>
+                <Text fw={500}>{t('status.applicationStatus')}</Text>
+                <Badge
+                  color={getStatusColor(application?.status)}
+                  leftSection={getStatusIcon(application?.status)}
+                >
+                  {application?.status === 'approved'
+                    ? t('status.approved')
+                    : application?.status === 'rejected'
+                      ? t('status.rejected')
+                      : t('status.pending')
+                  }
+                </Badge>
+              </Group>
+            </Card.Section>
 
-          <Timeline.Item 
-            bullet={<IconHourglassHigh size={16} />}
-            title={t('status.verification')}
-            color={application?.verificationDate ? "blue" : "gray"}
-          >
-            <Text color="dimmed" size="sm">{
-              application?.verificationDate 
-                ? formatDate(application.verificationDate) 
-                : t('status.pending')
-            }</Text>
-            <Text size="xs" mt={4}>{t('status.verificationDesc')}</Text>
-          </Timeline.Item>
+            <Group grow mt="md">
+              <div>
+                <Text size="sm" color="dimmed">{t('status.applicationId')}</Text>
+                <Text fw={500}>{application?.id || '—'}</Text>
+              </div>
 
-          <Timeline.Item 
-            bullet={
-              application?.status === 'approved' 
-                ? <IconCheck size={16} /> 
-                : application?.status === 'rejected'
-                  ? <IconX size={16} />
-                  : <IconHourglassHigh size={16} />
-            }
-            title={
-              application?.status === 'approved' 
-                ? t('status.approved')
-                : application?.status === 'rejected'
-                  ? t('status.rejected')
-                  : t('status.decision')
-            }
-            color={
-              application?.status === 'approved' 
-                ? "blue" 
-                : application?.status === 'rejected'
-                  ? "red"
-                  : "gray"
-            }
-          >
-            <Text color="dimmed" size="sm">{
-              application?.status === 'pending' 
-                ? t('status.pending')
-                : application?.verificationDate 
-                  ? formatDate(application.verificationDate) 
-                  : ''
-            }</Text>
-            <Text size="xs" mt={4}>
-              {application?.status === 'approved' 
-                ? t('status.approvedDesc')
-                : application?.status === 'rejected'
-                  ? t('status.rejectedDesc')
-                  : t('status.decisionDesc')
-              }
+              <div>
+                <Text size="sm" color="dimmed">{t('status.submissionDate')}</Text>
+                <Text fw={500}>{application?.createdAt
+                  ? formatDate(application.createdAt)
+                  : '—'}
+                </Text>
+              </div>
+
+              <div>
+                <Text size="sm" color="dimmed">{t('status.lastUpdated')}</Text>
+                <Text fw={500}>{application?.updatedAt
+                  ? formatDate(application.updatedAt)
+                  : '—'}
+                </Text>
+              </div>
+            </Group>
+
+            <div className="mt-4">
+              <Text size="sm" color="dimmed">{t('status.totalPoints')}</Text>
+              <Text fw={700} size="xl">{formatPoints(calculateTotalPoints())}</Text>
+            </div>
+
+            {application?.rejectionReason && (
+              <Alert
+                icon={<IconAlertCircle size={16} />}
+                title={t('status.rejectionReason')}
+                color="red"
+                mt="md"
+              >
+                {application.rejectionReason}
+              </Alert>
+            )}
+          </Card>
+
+          {/* Timeline of application status */}
+          <Card shadow="sm" padding="lg" radius="md" withBorder>
+            <Card.Section withBorder inheritPadding py="xs">
+              <Text fw={500}>{t('status.timeline')}</Text>
+            </Card.Section>
+
+            <Timeline active={
+              application?.status === 'approved' ? 3
+                : application?.status === 'rejected' ? 3
+                  : application?.verificationDate ? 2
+                    : 1
+            } bulletSize={24} lineWidth={2} mt="md">
+              <Timeline.Item
+                bullet={<IconFileCheck size={16} />}
+                title={t('status.submitted')}
+                color="blue"
+              >
+                <Text color="dimmed" size="sm">{
+                  application?.createdAt ? formatDate(application.createdAt) : ''
+                }</Text>
+                <Text size="xs" mt={4}>{t('status.submittedDesc')}</Text>
+              </Timeline.Item>
+
+              <Timeline.Item
+                bullet={<IconHourglassHigh size={16} />}
+                title={t('status.verification')}
+                color={application?.verificationDate ? "blue" : "gray"}
+              >
+                <Text color="dimmed" size="sm">{
+                  application?.verificationDate
+                    ? formatDate(application.verificationDate)
+                    : t('status.pending')
+                }</Text>
+                <Text size="xs" mt={4}>{t('status.verificationDesc')}</Text>
+              </Timeline.Item>
+
+              <Timeline.Item
+                bullet={
+                  application?.status === 'approved'
+                    ? <IconCheck size={16} />
+                    : application?.status === 'rejected'
+                      ? <IconX size={16} />
+                      : <IconHourglassHigh size={16} />
+                }
+                title={
+                  application?.status === 'approved'
+                    ? t('status.approved')
+                    : application?.status === 'rejected'
+                      ? t('status.rejected')
+                      : t('status.decision')
+                }
+                color={
+                  application?.status === 'approved'
+                    ? "blue"
+                    : application?.status === 'rejected'
+                      ? "red"
+                      : "gray"
+                }
+              >
+                <Text color="dimmed" size="sm">{
+                  application?.status === 'pending'
+                    ? t('status.pending')
+                    : application?.verificationDate
+                      ? formatDate(application.verificationDate)
+                      : ''
+                }</Text>
+                <Text size="xs" mt={4}>
+                  {application?.status === 'approved'
+                    ? t('status.approvedDesc')
+                    : application?.status === 'rejected'
+                      ? t('status.rejectedDesc')
+                      : t('status.decisionDesc')
+                  }
+                </Text>
+              </Timeline.Item>
+
+              {application?.status === 'approved' && (
+                <Timeline.Item
+                  bullet={<IconCalendarEvent size={16} />}
+                  title={t('status.scheduling')}
+                  color="blue"
+                >
+                  {/* Show schedule info or button to select schedule */}
+                  {/* Implementation will depend on schedule data structure */}
+                </Timeline.Item>
+              )}
+            </Timeline>
+          </Card>
+
+          {/* Documents section */}
+          <Card shadow="sm" padding="lg" radius="md" withBorder>
+            <Card.Section withBorder inheritPadding py="xs">
+              <Text fw={500}>{t('status.documents')}</Text>
+            </Card.Section>
+
+            <Text size="sm" color="dimmed" mt="md" mb="md">
+              {t('status.documentsDesc')}
             </Text>
-          </Timeline.Item>
-
-          {application?.status === 'approved' && (
-            <Timeline.Item 
-              bullet={<IconCalendarEvent size={16} />}
-              title={t('status.scheduling')}
-              color="blue"
-            >
-              {/* Show schedule info or button to select schedule */}
-              {/* Implementation will depend on schedule data structure */}
-            </Timeline.Item>
-          )}
-        </Timeline>
-      </Card>
-
-      {/* Documents section */}
-      <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Card.Section withBorder inheritPadding py="xs">
-          <Text fw={500}>{t('status.documents')}</Text>
-        </Card.Section>
-
-        <Text size="sm" color="dimmed" mt="md" mb="md">
-          {t('status.documentsDesc')}
-        </Text>
-        {application && (
-           <Button 
-           component="a" 
-           href={`/dashboard/documents/${application?.id}`}
-           fullWidth
-           variant="light"
-         >
-           {t('status.viewDocuments')}
-         </Button>
-        )}
-      </Card>
+            {application && (
+              <Button
+                component="a"
+                href={`/dashboard/documents/${application?.id}`}
+                fullWidth
+                variant="light"
+              >
+                {t('status.viewDocuments')}
+              </Button>
+            )}
+          </Card>
+        </>
+      )}
     </div>
   );
 }

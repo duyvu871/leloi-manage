@@ -40,6 +40,7 @@ import { getLocalStorageItem, setLocalStorageItem, clearAllDraftData } from '@/u
 import { DraftFormData } from '@/types/storage';
 import { STORAGE_KEYS } from '@/constants/storage';
 import { set } from 'zod';
+import { useRegistration } from '@/providers/registration-provider';
 
 const competitionResults = [
 	{
@@ -61,7 +62,7 @@ const competitionResults = [
 ] as const;
 
 const levelOptions = [
-	{ value: 'city', label: 'Cấp Thành phố', disabled: false },
+	{ value: 'city', label: 'Cấp Thành phố', disabled: true },
 	{ value: 'national', label: 'Cấp Quốc gia', disabled: false },
 ] as const;
 
@@ -94,6 +95,8 @@ export default function RegistrationFormV1() {
 	const [parentInfo] = useAtom(parentInfoAtom);
 	const [, updateParentInfo] = useAtom(updateParentInfoAtom);
 
+	const { submitRegistration } = useRegistration();
+
 	const {
 		control,
 		handleSubmit,
@@ -109,13 +112,13 @@ export default function RegistrationFormV1() {
 			studentInfo: {
 				gender: (selectedStudent?.gender as 'male' | 'female') || 'male',
 				fullName: selectedStudent?.fullName || '',
-				dateOfBirth: selectedStudent?.dateOfBirth || new Date(),
+				dateOfBirth: selectedStudent?.dateOfBirth ? new Date(selectedStudent?.dateOfBirth.toString()) : new Date(),
 				placeOfBirth: selectedStudent?.placeOfBirth || '',
 				educationDepartment: selectedStudent?.educationDepartment || '',
 				primarySchool: selectedStudent?.primarySchool || '',
 				grade: selectedStudent?.grade || '',
 			},
-			competitionResults: [],
+			competitionResults: selectedStudent?.competitionResults,
 			priorityPoint: {
 				type: 'none',
 				points: 0,
@@ -313,13 +316,13 @@ export default function RegistrationFormV1() {
 
 			// Clear draft data after successful submission
 			// clearAllDraftData();
-
+			await submitRegistration(formValues);
 			// Close the modal
 			closeConfirmModal();
-			showSuccessToast('Đăng ký thành công!');
-		} catch (error) {
+			// showSuccessToast('Đăng ký thành công!');
+		} catch (error: any) {
 			console.error('Error submitting form:', error);
-			showErrorToast('Có lỗi xảy ra khi đăng ký. Vui lòng thử lại!');
+			showErrorToast(error.message || 'Có lỗi xảy ra khi đăng ký. Vui lòng thử lại!');
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -467,6 +470,7 @@ export default function RegistrationFormV1() {
 											error={getErrorMessage('studentInfo.dateOfBirth')}
 											required
 											valueFormat='DD/MM/YYYY'
+											locale='vi'
 											{...field}
 										/>
 									)}
@@ -948,6 +952,11 @@ export default function RegistrationFormV1() {
 																| 'first'
 																| 'second'
 																| 'third';
+																console.log(competition.competitionId,
+																	level.value,
+																	selectedValue,
+																	index * levelOptions.length + levelIndex);
+																
 															updateCompetitionResults(
 																competition.competitionId,
 																level.value,

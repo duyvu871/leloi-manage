@@ -9,12 +9,11 @@ import { useApplicationManagement } from '@/hooks/client/use-application-managem
 import useToast from '@/hooks/client/use-toast-notification';
 import { Document } from '@/types/registration';
 import { useTranslations } from 'next-intl';
+import { useAtom } from 'jotai';
+import { selectedStudentApplicationAtom, userAtom } from '@/stores/user';
 
-interface DocumentUploadProps {
-	applicationId: number;
-}
 
-export default function DocumentUpload({ applicationId }: DocumentUploadProps) {
+export default function DocumentUpload() {
 	const t = useTranslations('dashboard');
 	const { showErrorToast, showSuccessToast } = useToast();
 	const [uploadProgress, setUploadProgress] = useState(0);
@@ -24,17 +23,20 @@ export default function DocumentUpload({ applicationId }: DocumentUploadProps) {
 	const [transcriptFile, setTranscriptFile] = useState<File | null>(null);
 	const [certificateFiles, setCertificateFiles] = useState<File[]>([]);
 
-	const { documents, extractedData, isLoading, error, loadDocuments, uploadDocument } =
-		useDocumentManagement({ applicationId });
+	const [user] = useAtom(userAtom);
+	const [applicationAtom] = useAtom(selectedStudentApplicationAtom);
 
-	const { application, loadApplicationStatus } = useApplicationManagement({ applicationId });
+	const { documents, extractedData, isLoading, error, loadDocuments, uploadDocument } =
+		useDocumentManagement();
+
+	const { application, loadApplicationStatus } = useApplicationManagement();
 
 	useEffect(() => {
-		if (applicationId) {
-			loadDocuments();
-			loadApplicationStatus();
+		if (applicationAtom?.id) {
+			loadDocuments(applicationAtom.id);
+			loadApplicationStatus(applicationAtom.id);
 		}
-	}, [applicationId, loadDocuments, loadApplicationStatus]);
+	}, [application, loadDocuments, loadApplicationStatus]);
 
 	const handleTranscriptUpload = async (file: File) => {
 		setActiveDocType('transcript');

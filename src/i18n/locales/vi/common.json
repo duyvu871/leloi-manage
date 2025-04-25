@@ -19,7 +19,8 @@
         "loading": "Đang tải...",
         "required": "Bắt buộc",
         "error": "Lỗi",
-        "success": "Thành công"
+        "success": "Thành công",
+        "account": "Tài khoản"
     },
     "nav": {
         "home": "Trang chủ",
@@ -49,6 +50,22 @@
         "login_btn": "Đăng nhập",
         "no_account": "Chưa có tài khoản?",
         "create_account": "Tạo tài khoản mới"
+    },
+    "parent": {
+        "student": "Học sinh",
+        "manageStudents": "Quản lý học sinh",
+        "addStudent": "Thêm học sinh mới",
+        "editStudent": "Sửa thông tin học sinh",
+        "deleteStudent": "Xóa học sinh",
+        "studentList": "Danh sách học sinh"
+    },
+    "manager": {
+        "management": "Quản lý",
+        "dashboard": "Bảng điều khiển",
+        "applications": "Hồ sơ đăng ký",
+        "students": "Học sinh",
+        "schedule": "Lịch",
+        "settings": "Cài đặt hệ thống"
     },
     "landing": {
         "hero": {
@@ -231,6 +248,15 @@
             "certificateInstruction": "Tải lên bất kỳ chứng chỉ, giải thưởng hoặc thành tích khác (không bắt buộc)"
         },
         "status": {
+            "userInfo": "Thông tin Phụ huynh",
+            "studentInfo": "Thông tin học sinh",
+            "studentName": "Họ và tên",
+            "studentId": "Mã học sinh",
+            "dateOfBirth": "Ngày sinh",
+            "gender": "Giới tính",
+            "noApplication": "Chưa có hồ sơ đăng ký",
+            "noApplicationDesc": "Bạn chưa tạo hồ sơ đăng ký cho học sinh này. Vui lòng tạo hồ sơ để tiếp tục quá trình đăng ký.",
+            "createApplication": "Tạo hồ sơ đăng ký",
             "applicationStatus": "Trạng thái hồ sơ",
             "applicationId": "Mã hồ sơ",
             "submissionDate": "Ngày nộp",
@@ -239,14 +265,14 @@
             "rejectionReason": "Lý do từ chối",
             "timeline": "Tiến trình xử lý hồ sơ",
             "submitted": "Đã nộp hồ sơ",
-            "submittedDesc": "Hồ sơ của bạn đã được nộp thành công",
+            "submittedDesc": "Hồ sơ của bạn đã được nộp thành công và đang chờ xét duyệt.",
             "verification": "Xác minh tài liệu",
-            "verificationDesc": "Tài liệu của bạn đang được đội ngũ của chúng tôi xác minh",
+            "verificationDesc": "Nhà trường đang kiểm tra và xác thực thông tin của hồ sơ.",
             "decision": "Quyết định cuối cùng",
             "approved": "Hồ sơ được chấp nhận",
-            "approvedDesc": "Xin chúc mừng! Hồ sơ của bạn đã được chấp nhận",
+            "approvedDesc": "Xin chúc mừng! Hồ sơ của bạn đã được phê duyệt.",
             "rejected": "Hồ sơ bị từ chối",
-            "rejectedDesc": "Rất tiếc, hồ sơ của bạn đã bị từ chối",
+            "rejectedDesc": "Rất tiếc, hồ sơ của bạn đã bị từ chối. Vui lòng xem lý do từ chối và liên hệ với nhà trường nếu có thắc mắc.",
             "decisionDesc": "Đang chờ quyết định cuối cùng về hồ sơ của bạn",
             "scheduling": "Đặt lịch hẹn",
             "documents": "Tài liệu yêu cầu",

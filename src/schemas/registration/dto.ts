@@ -106,7 +106,7 @@ export interface CreateCompetitionResultDto {
 // Registration response DTO that combines all related entities
 export interface RegistrationResponseDto {
     student: Student;
-    application: Application;
+    application?: Application;
     parentInfo: ParentInfo;
     priorityPoint?: PriorityPoint;
     competitionResults?: CompetitionResult[];

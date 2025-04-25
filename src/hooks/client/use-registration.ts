@@ -1,11 +1,10 @@
 import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
 
-import { 
+import {
   currentStudentAtom,
-  parentInfoAtom, 
+  parentInfoAtom,
   commitmentAtom,
   priorityPointAtom,
   competitionResultsAtom,
@@ -20,10 +19,11 @@ import { convertFormToDbDtos, RegistrationFormData } from '@/schemas/registratio
 import { STORAGE_KEYS } from '@/constants/storage';
 import { setLocalStorageItem, getLocalStorageItem, removeLocalStorageItem } from '@/utils/localstorage';
 import * as registrationApi from '@/libs/apis/registration';
+import useToast from './use-toast-notification';
 
 export const useRegistration = () => {
   const router = useRouter();
-  
+  const { showErrorToast, showSuccessToast } = useToast();
   // Store state atoms
   const [user] = useAtom(userAtom);
   const [currentStudent, setCurrentStudent] = useAtom(currentStudentAtom);
@@ -51,7 +51,7 @@ export const useRegistration = () => {
   const saveDraft = (data: RegistrationFormData) => {
     setLocalStorageItem(STORAGE_KEYS.REGISTRATION_FORM_DRAFT, data);
     setDraftExists(true);
-    toast.success('Dữ liệu đã được lưu tạm thời.');
+    showSuccessToast('Dữ liệu đã được lưu tạm thời.');
   };
 
   // Load draft data
@@ -68,7 +68,7 @@ export const useRegistration = () => {
   // Submit registration form
   const submitRegistration = async (formData: RegistrationFormData) => {
     if (!user) {
-      toast.error('Bạn cần đăng nhập để đăng ký.');
+      showErrorToast('Bạn cần đăng nhập để đăng ký.');
       return;
     }
 
@@ -78,35 +78,35 @@ export const useRegistration = () => {
     try {
       // Submit the entire form at once using our API
       const result = await registrationApi.submitRegistration(formData, user.id);
-      
+
       setIsSuccess(true);
-        setCurrentStudent(result.student);
-        setParentInfo(result.parentInfo);
-        
-        if (result.commitment) {
-          setCommitment(result.commitment);
-        }
-        
-        if (result.priorityPoint) {
-          setPriorityPoint(result.priorityPoint);
-        }
-        
-        if (result.competitionResults) {
-          setCompetitionResults(result.competitionResults);
-        }
-        
-        // Clear draft after successful submission
-        clearDraft();
-        
-        // Show success message
-        toast.success('Đăng ký thành công!');
-        
-        // Redirect to status page
-        router.push('/dashboard/status');
+      // setCurrentStudent(result.student);
+      // setParentInfo(result.parentInfo);
+
+      // if (result.commitment) {
+      //   setCommitment(result.commitment);
+      // }
+
+      // if (result.priorityPoint) {
+      //   setPriorityPoint(result.priorityPoint);
+      // }
+
+      // if (result.competitionResults) {
+      //   setCompetitionResults(result.competitionResults);
+      // }
+
+      // Clear draft after successful submission
+      clearDraft();
+
+      // Show success message
+      showSuccessToast('Đăng ký thành công!');
+
+      // Redirect to status page
+      // router.push('/dashboard/status');
     } catch (err) {
       console.error('Registration error:', err);
       setError(err instanceof Error ? err.message : 'Có lỗi xảy ra khi đăng ký.');
-      toast.error(err instanceof Error ? err.message : 'Có lỗi xảy ra khi đăng ký.');
+      showErrorToast(err instanceof Error ? err.message : 'Có lỗi xảy ra khi đăng ký.');
     } finally {
       setIsSubmitting(false);
     }
@@ -115,7 +115,7 @@ export const useRegistration = () => {
   // Update registration information
   const updateRegistration = async (studentId: number, updates: any) => {
     if (!user) {
-      toast.error('Bạn cần đăng nhập để cập nhật thông tin.');
+      showErrorToast('Bạn cần đăng nhập để cập nhật thông tin.');
       return;
     }
 
@@ -124,28 +124,28 @@ export const useRegistration = () => {
 
     try {
       const result = await registrationApi.updateRegistration(studentId, updates);
-      
+
       // Update local state
       setCurrentStudent(result.student);
       setParentInfo(result.parentInfo);
-      
+
       if (result.commitment) {
         setCommitment(result.commitment);
       }
-      
+
       if (result.priorityPoint) {
         setPriorityPoint(result.priorityPoint);
       }
-      
+
       if (result.competitionResults) {
         setCompetitionResults(result.competitionResults);
       }
-      
-      toast.success('Cập nhật thông tin thành công!');
+
+      showSuccessToast('Cập nhật thông tin thành công!');
     } catch (err) {
       console.error('Update error:', err);
       setError(err instanceof Error ? err.message : 'Có lỗi xảy ra khi cập nhật thông tin.');
-      toast.error(err instanceof Error ? err.message : 'Có lỗi xảy ra khi cập nhật thông tin.');
+      showErrorToast(err instanceof Error ? err.message : 'Có lỗi xảy ra khi cập nhật thông tin.');
     } finally {
       setIsSubmitting(false);
     }
@@ -154,7 +154,7 @@ export const useRegistration = () => {
   // Load registration data for a student
   const loadRegistrationData = async (studentId: number) => {
     if (!user) {
-      toast.error('Bạn cần đăng nhập để xem thông tin đăng ký.');
+      showErrorToast('Bạn cần đăng nhập để xem thông tin đăng ký.');
       return;
     }
 
@@ -163,26 +163,26 @@ export const useRegistration = () => {
 
     try {
       const result = await registrationApi.getRegistrationByStudentId(studentId);
-      
-       // Update local state
-       setCurrentStudent(result.student);
-       setParentInfo(result.parentInfo);
-       
-       if (result.commitment) {
-         setCommitment(result.commitment);
-       }
-       
-       if (result.priorityPoint) {
-         setPriorityPoint(result.priorityPoint);
-       }
-       
-       if (result.competitionResults) {
-         setCompetitionResults(result.competitionResults);
-       }
+
+      // Update local state
+      setCurrentStudent(result.student);
+      setParentInfo(result.parentInfo);
+
+      if (result.commitment) {
+        setCommitment(result.commitment);
+      }
+
+      if (result.priorityPoint) {
+        setPriorityPoint(result.priorityPoint);
+      }
+
+      if (result.competitionResults) {
+        setCompetitionResults(result.competitionResults);
+      }
     } catch (err) {
       console.error('Load error:', err);
       setError(err instanceof Error ? err.message : 'Có lỗi xảy ra khi tải dữ liệu.');
-      toast.error(err instanceof Error ? err.message : 'Có lỗi xảy ra khi tải dữ liệu.');
+      showErrorToast(err instanceof Error ? err.message : 'Có lỗi xảy ra khi tải dữ liệu.');
     } finally {
       setIsSubmitting(false);
     }
@@ -195,13 +195,13 @@ export const useRegistration = () => {
 
     try {
       const result = await registrationApi.uploadDocument(applicationId, file, type);
-      
-      toast.success('Tải lên tài liệu thành công!');
-        return result.document.id;
+
+      showSuccessToast('Tải lên tài liệu thành công!');
+      return result.document.id;
     } catch (err) {
       console.error('Upload error:', err);
       setError(err instanceof Error ? err.message : 'Có lỗi xảy ra khi tải lên tài liệu.');
-      toast.error(err instanceof Error ? err.message : 'Có lỗi xảy ra khi tải lên tài liệu.');
+      showErrorToast(err instanceof Error ? err.message : 'Có lỗi xảy ra khi tải lên tài liệu.');
     } finally {
       setIsSubmitting(false);
     }
@@ -220,7 +220,7 @@ export const useRegistration = () => {
     isSuccess,
     error,
     draftExists,
-    
+
     // Actions
     submitRegistration,
     updateRegistration,
@@ -230,7 +230,7 @@ export const useRegistration = () => {
     loadDraft,
     clearDraft,
     resetRegistration,
-    
+
     // Utils
     convertFormToDbDtos
   };

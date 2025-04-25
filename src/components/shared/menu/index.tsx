@@ -5,13 +5,14 @@ import { authTokenAtom } from '@store/auth';
 import { useRouter } from 'src/i18n/navigation';
 import { userAtom } from '@/stores/user';
 import { use, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
+// import { useTranslation } from 'react-i18next';
 
 export function UserMenu() {
   const [user] = useAtom(userAtom);
   const [, setAuthToken] = useAtom(authTokenAtom);
   const router = useRouter();
-  const { t } = useTranslation();
+  const t = useTranslations();
 
   if (!user) return null;
 
@@ -48,36 +49,36 @@ export function UserMenu() {
       </Menu.Target>
 
       <Menu.Dropdown>
-        <Menu.Label>{t('common.account', 'Tài khoản')}</Menu.Label>
+        <Menu.Label>{t('common.account')}</Menu.Label>
         <Menu.Item 
           leftSection={<IconUser size={14} />}
           onClick={() => handleNavigate('/profile')}
         >
-          {t('common.profile', 'Thông tin cá nhân')}
+          {t('common.profile')}
         </Menu.Item>
         <Menu.Item 
           leftSection={<IconSettings size={14} />}
           onClick={() => handleNavigate('/settings')}
         >
-          {t('common.settings', 'Cài đặt')}
+          {t('common.settings')}
         </Menu.Item>
 
         <Menu.Divider />
 
         {user.role === 'user' && (
           <>
-            <Menu.Label>{t('parent.student', 'Học sinh')}</Menu.Label>
+            <Menu.Label>{t('parent.student')}</Menu.Label>
             <Menu.Item onClick={() => handleNavigate('/students')}>
-              {t('parent.manageStudents', 'Quản lý học sinh')}
+              {t('parent.manageStudents')}
             </Menu.Item>
           </>
         )}
 
         {user.role === 'admin' && (
           <>
-            <Menu.Label>{t('manager.management', 'Quản lý')}</Menu.Label>
+            <Menu.Label>{t('manager.management')}</Menu.Label>
             <Menu.Item onClick={() => handleNavigate('/dashboard')}>
-              {t('manager.dashboard', 'Bảng điều khiển')}
+              {t('manager.dashboard')}
             </Menu.Item>
           </>
         )}
@@ -89,7 +90,7 @@ export function UserMenu() {
           leftSection={<IconLogout size={14} />}
           onClick={handleLogout}
         >
-          {t('common.logout', 'Đăng xuất')}
+          {t('common.logout')}
         </Menu.Item>
       </Menu.Dropdown>
     </Menu>

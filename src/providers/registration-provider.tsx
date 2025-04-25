@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useRegistration } from '@/hooks/client/use-registration';
+import { useRegistration as useRegistrationHook } from '@/hooks/client/use-registration';
 import { RegistrationFormData } from '@/schemas/registration/dto';
 import { Student, ParentInfo, Commitment, PriorityPoint } from '@/types/registration';
 import { CompetitionResult } from '@/types/points';
@@ -35,7 +35,7 @@ const RegistrationContext = createContext<RegistrationContextType | undefined>(u
 
 // Provider component
 export const RegistrationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const registration = useRegistration();
+  const registration = useRegistrationHook();
   
   return (
     <RegistrationContext.Provider value={registration}>
@@ -45,7 +45,7 @@ export const RegistrationProvider: React.FC<{ children: ReactNode }> = ({ childr
 };
 
 // Custom hook to use the registration context
-export const useRegistrationContext = (): RegistrationContextType => {
+export const useRegistration = (): RegistrationContextType => {
   const context = useContext(RegistrationContext);
   
   if (context === undefined) {
