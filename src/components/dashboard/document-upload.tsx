@@ -42,7 +42,6 @@ export default function DocumentUpload() {
 		setActiveDocType('transcript');
 		setIsUploading(true);
 		setUploadProgress(10);
-		setTranscriptFile(file);
 
 		const progressInterval = setInterval(() => {
 			setUploadProgress(prev => {
@@ -55,7 +54,10 @@ export default function DocumentUpload() {
 		}, 500);
 
 		try {
-			await uploadDocument(file, 'transcript');
+			if (!applicationAtom?.id) return;
+			const upload = await uploadDocument(file, 'transcript', applicationAtom?.id);
+			if (!upload) return;
+			setTranscriptFile(file);
 			setUploadProgress(100);
 			loadApplicationStatus();
 			// showSuccessToast(t('documents.uploadSuccess'));
@@ -77,7 +79,6 @@ export default function DocumentUpload() {
 		if (files.length === 0) return;
 
 		setActiveDocType('certificate');
-		setCertificateFiles(prev => [...prev, ...files]);
 
 		for (const file of files) {
 			setIsUploading(true);
@@ -94,7 +95,11 @@ export default function DocumentUpload() {
 			}, 300);
 
 			try {
-				await uploadDocument(file, 'certificate');
+				if (!applicationAtom?.id) return;
+				const upload = await uploadDocument(file, 'certificate', applicationAtom?.id);
+				if (!upload) return;
+				setCertificateFiles(prev => [...prev, file]);
+
 				setUploadProgress(100);
 				loadApplicationStatus();
 			} catch (error) {
@@ -156,14 +161,14 @@ export default function DocumentUpload() {
 								application?.status === 'approved'
 									? 'teal'
 									: application?.status === 'rejected'
-									? 'red'
-									: 'blue'
+										? 'red'
+										: 'blue'
 							}>
 							{application?.status === 'approved'
 								? t('status.approved')
 								: application?.status === 'rejected'
-								? t('status.rejected')
-								: t('status.pending')}
+									? t('status.rejected')
+									: t('status.pending')}
 						</Badge>
 					</Group>
 				</Card.Section>
@@ -381,11 +386,11 @@ export default function DocumentUpload() {
 				)}
 			</Card>
 
-			{error && (
+			{/* {error && (
 				<Text color='red' size='sm'>
 					{error}
 				</Text>
-			)}
+			)} */}
 		</div>
 	);
 }
