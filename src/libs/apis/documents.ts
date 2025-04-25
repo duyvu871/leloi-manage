@@ -4,9 +4,10 @@ import { SuccessResponse } from "@/types/api/response";
 import { Document, ExtractedData } from "@/types/registration";
 
 // Interface for document upload response
-interface DocumentUploadResponse {
-  document: Document;
-  extractedData?: ExtractedData;
+export type DocumentUploadResponse = {
+  id: string;
+  jobId?: string;
+  status: string;
 }
 
 // Upload a document and get extracted data

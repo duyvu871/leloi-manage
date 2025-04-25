@@ -33,8 +33,8 @@ export const useDocumentManagement = ({ applicationId }: UseDocumentManagementPr
       const extractedDataMap: Record<number, ExtractedData> = {};
       for (const doc of docs) {
         try {
-          const data = await documentApi.getExtractedData(doc.id);
-          extractedDataMap[doc.id] = data;
+          const data = await documentApi.getExtractedData(Number(doc.id));
+          extractedDataMap[Number(doc.id)] = data;
         } catch (err) {
           console.warn(`Failed to load extracted data for document ${doc.id}:`, err);
         }
@@ -65,19 +65,14 @@ export const useDocumentManagement = ({ applicationId }: UseDocumentManagementPr
     try {
       const response = await documentApi.uploadAndProcessDocument(targetAppId, file, type);
       
-      // Add the new document to our state
-      setDocuments(prev => [...prev, response.document]);
-      
-      // Add extracted data if available
-      if (response.extractedData) {
-        setExtractedData(prev => ({
-          ...prev,
-          [response.document.id]: response.extractedData!
-        }));
-      }
-      
+      // Note: The server is processing the document, so we don't receive extractedData immediately
+      // We'll need to reload documents after upload to get the updated list
       showSuccessToast('Tài liệu đã được tải lên thành công');
-      return response.document;
+      
+      // After successful upload, reload the documents list
+      await loadDocuments(targetAppId);
+      
+      return response;
     } catch (err) {
       console.error('Failed to upload document:', err);
       setError(err instanceof Error ? err.message : 'Failed to upload document');
@@ -86,7 +81,7 @@ export const useDocumentManagement = ({ applicationId }: UseDocumentManagementPr
     } finally {
       setIsLoading(false);
     }
-  }, [applicationId]);
+  }, [applicationId, loadDocuments]);
   
   // Verify extracted data
   const verifyExtractedData = useCallback(async (extractedDataId: number, isVerified: boolean) => {

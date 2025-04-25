@@ -4,9 +4,10 @@ import { ReactNode, useState } from 'react';
 import Sidebar from '../shared/sidebar/sidebar';
 import { usePathname } from 'next/navigation';
 import { Container, Tabs, Title } from '@mantine/core';
-import RegistrationProvider from '@/providers/registration-provider';
+// import RegistrationProvider from '@/providers/registration-provider';
 import { useTranslation } from 'react-i18next';
 import { IconFileText, IconUpload, IconClipboardList } from '@tabler/icons-react';
+import { RegistrationProvider } from '@/providers/registration-provider';
 
 interface ParentDashboardProps {
   children?: ReactNode;
