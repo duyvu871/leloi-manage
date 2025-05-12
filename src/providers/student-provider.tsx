@@ -1,25 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { createContext, useContext } from 'react';
-import { Student } from '@/types/student';
+// import { Student } from '@/types/student';
 import useToast from '@/hooks/client/use-toast-notification';
 import { getStudentById, updateStudent as apiUpdateStudent } from '@/libs/apis/registration';
 import { uploadAndProcessDocument } from '@/libs/apis/documents';
+import { Student } from '@/schemas/user/dto';
+import { StudentDto } from '@/types/student';
 
 export type StudentContextType = {
-	student: Student | null;
+	student: StudentDto | null;
 	isLoading: boolean;
 	error: string | null;
 	loadStudent: (studentId: number) => Promise<void>;
 	updateStudent: (studentId: number, data: Partial<Student>) => Promise<void>;
 	uploadDocument: (applicationId: number, file: File, type: string) => Promise<any>;
-	setStudent: (student: Student | null) => void;
+	setStudent: (student: StudentDto | null) => void;
 };
 
 const StudentContext = createContext<StudentContextType | null>(null);
 
 export function StudentProvider({ children, id }: { children: React.ReactNode; id: number }) {
 	const toast = useToast();
-	const [student, setStudent] = useState<Student | null>(null);
+	const [student, setStudent] = useState<StudentDto | null>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -54,7 +56,7 @@ export function StudentProvider({ children, id }: { children: React.ReactNode; i
 			const response = await apiUpdateStudent(studentId, data);
 			
 			// await loadStudent(studentId);
-            setStudent((prev) => (prev ? { ...prev, ...data } : null));
+            // setStudent((prev) => (prev ? { ...prev, ...data } : null));
 			toast.showSuccessToast("Cập nhật thông tin học sinh thành công");
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Đã xảy ra lỗi không xác định");
@@ -70,7 +72,7 @@ export function StudentProvider({ children, id }: { children: React.ReactNode; i
 			setIsLoading(true);
 			setError(null);
 			
-			const response = await uploadAndProcessDocument(applicationId, file, type);
+			const response = await uploadAndProcessDocument(applicationId, [file], type);
 			
 			toast.showSuccessToast(`Tải lên tài liệu ${type} thành công`);
 			return response;
