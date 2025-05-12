@@ -134,11 +134,11 @@ export const useRegistration = () => {
       }
 
       if (result.priorityPoint) {
-        setPriorityPoint(result.priorityPoint);
+        // setPriorityPoint(result.priorityPoint);
       }
 
       if (result.competitionResults) {
-        setCompetitionResults(result.competitionResults);
+        // setCompetitionResults(result.competitionResults);
       }
 
       showSuccessToast('Cập nhật thông tin thành công!');
@@ -173,11 +173,11 @@ export const useRegistration = () => {
       }
 
       if (result.priorityPoint) {
-        setPriorityPoint(result.priorityPoint);
+        // setPriorityPoint(result.priorityPoint);
       }
 
       if (result.competitionResults) {
-        setCompetitionResults(result.competitionResults);
+        // setCompetitionResults(result.competitionResults);
       }
     } catch (err) {
       console.error('Load error:', err);
