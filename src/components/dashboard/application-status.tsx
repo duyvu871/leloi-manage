@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Card,
   Text,
@@ -13,7 +13,9 @@ import {
   Alert,
   Avatar,
   Divider,
-  Box
+  Box,
+  Table,
+  Stack
 } from '@mantine/core';
 import {
   IconAlertCircle,
@@ -23,15 +25,15 @@ import {
   IconCalendarEvent,
   IconFileCheck,
   IconInfoCircle,
-  IconUserCircle
+  IconUserCircle,
+  IconSchool,
+  IconTrophy
 } from '@tabler/icons-react';
-import { useApplicationManagement } from '@/hooks/client/use-application-management';
-import { useRegistration } from '@/providers/registration-provider';
-import { formatPoints } from '@/utils/points-calculator';
 import { useTranslations } from 'next-intl';
-import { ApplicationStatus } from '@/types/registration';
 import { useAtom } from 'jotai';
-import { userAtom, selectedStudentAtom, selectedStudentIndexAtom } from '@/stores/user';
+import { userAtom } from '@/stores/user';
+import * as registrationApi from '@/libs/apis/registration';
+import useToast from '@/hooks/client/use-toast-notification';
 
 interface ApplicationStatusComponentProps {
   studentId?: number;
@@ -39,44 +41,70 @@ interface ApplicationStatusComponentProps {
 }
 
 export default function ApplicationStatusComponent({
-  // studentId, 
-  // applicationId 
+  studentId,
+  applicationId
 }: ApplicationStatusComponentProps) {
   const t = useTranslations('dashboard');
-  const [user, setUser] = useAtom(userAtom);
-  const [selectedStudent] = useAtom(selectedStudentAtom);
-  const [selectedStudentIndex] = useAtom(selectedStudentIndexAtom);
-  const {
-    application,
-    availableSlots,
-    isLoading,
-    error,
-    loadApplicationStatus,
-    loadAvailableScheduleSlots,
-    assignScheduleSlot
-  } = useApplicationManagement();
+  const [user] = useAtom(userAtom);
+  const { showErrorToast } = useToast();
 
-  const { competitionResults, priorityPoint } = useRegistration();
+  // State
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [applicationData, setApplicationData] = useState<any>(null);
+  const [availableSlots, setAvailableSlots] = useState<any[]>([]);
+  const [pointsBreakdown, setPointsBreakdown] = useState<any>(null);
 
-  // Load application status on component mount
+  // Load application status and points
   useEffect(() => {
-    if (user?.students[0]?.application?.id) {
-      loadApplicationStatus(user?.students[0]?.application?.id);
-    }
-    // loadAvailableScheduleSlots();
-  }, [user]);
+    const loadApplicationData = async () => {
+      if (!applicationId) return;
+      
+      setIsLoading(true);
+      try {
+        // Load application status
+        const statusResponse = await registrationApi.getApplicationStatus(applicationId);
+        setApplicationData(statusResponse.application);
 
-  // Load available schedule slots when needed for scheduling
-  const handleScheduleClick = async () => {
-    await loadAvailableScheduleSlots();
-  };
+        // Load points breakdown
+        const pointsResponse = await registrationApi.calculateApplicationPoints(applicationId);
+        setPointsBreakdown(pointsResponse);
+      } catch (err: any) {
+        setError(err.message || 'Failed to load application data');
+        showErrorToast(err.message || 'Failed to load application data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadApplicationData();
+  }, [applicationId]);
+
+  // // Load available schedule slots
+  // const handleScheduleClick = async () => {
+  //   try {
+  //     const response = await registrationApi.getAvailableScheduleSlots();
+  //     setAvailableSlots(response.slots);
+  //   } catch (err: any) {
+  //     showErrorToast(err.message || 'Failed to load schedule slots');
+  //   }
+  // };
 
   // Select a schedule slot
   const handleSelectSlot = async (slotId: number) => {
-    await assignScheduleSlot(slotId);
+    if (!applicationId) return;
+    
+    try {
+      await registrationApi.assignScheduleSlot(applicationId, slotId);
+      // Reload application data to get updated exam info
+      const response = await registrationApi.getApplicationStatus(applicationId);
+      setApplicationData(response.application);
+    } catch (err: any) {
+      showErrorToast(err.message || 'Failed to assign schedule slot');
+    }
   };
 
-  const getStatusColor = (status?: ApplicationStatus): string => {
+  const getStatusColor = (status?: string): string => {
     switch (status) {
       case 'approved':
         return 'green';
@@ -88,7 +116,7 @@ export default function ApplicationStatusComponent({
     }
   };
 
-  const getStatusIcon = (status?: ApplicationStatus) => {
+  const getStatusIcon = (status?: string) => {
     switch (status) {
       case 'approved':
         return <IconCheck size={16} />;
@@ -100,26 +128,7 @@ export default function ApplicationStatusComponent({
     }
   };
 
-  // Calculate total points
-  const calculateTotalPoints = () => {
-    let totalPoints = 0;
-
-    // Add competition/bonus points (use highest)
-    if (competitionResults && competitionResults.length > 0) {
-      const highestPoints = Math.max(...competitionResults.map(result => result.points));
-      totalPoints += highestPoints;
-    }
-
-    // Add priority points
-    if (priorityPoint) {
-      totalPoints += priorityPoint.points;
-    }
-
-    return totalPoints;
-  };
-
-  // Function to format date
-  const formatDate = (date: Date | string | undefined) => {
+  const formatDate = (date: string | undefined) => {
     if (!date) return '';
     return new Date(date).toLocaleDateString('vi-VN', {
       year: 'numeric',
@@ -142,7 +151,7 @@ export default function ApplicationStatusComponent({
     return (
       <Alert
         icon={<IconAlertCircle size={16} />}
-        title={t('status.errorTitle')}
+        title="Error"
         color="red"
       >
         {error}
@@ -150,259 +159,271 @@ export default function ApplicationStatusComponent({
     );
   }
 
-  const hasApplication = user?.students[0]?.application?.id;
+  if (!applicationData) {
+    return (
+      <Alert
+        icon={<IconInfoCircle size={16} />}
+        title="No Application Found"
+        color="yellow"
+      >
+        Please submit an application first.
+      </Alert>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      {/* User and Student Information Card */}
+      {/* Basic Information Card */}
       <Card shadow="sm" padding="lg" radius="md" withBorder>
         <Card.Section withBorder inheritPadding py="xs">
           <Group>
-            <Text fw={500}>{t('status.userInfo')}</Text>
+            <IconSchool size={20} />
+            <Text fw={500}>Student Information</Text>
           </Group>
         </Card.Section>
 
-        <Group mt="md" mb="md">
-          <Avatar
-            size="lg"
-            radius="xl"
-            color="blue"
-            src={undefined}
-          >
-            {user?.fullName ? user.fullName.charAt(0) : <IconUserCircle size={24} />}
-          </Avatar>
-          <div>
-            <Text fw={600}>{user?.fullName || '—'}</Text>
-            <Text size="sm" color="dimmed">{user?.email || '—'}</Text>
-          </div>
-        </Group>
+        <Box mt="md">
+          <Group grow>
+            <div>
+              <Text size="sm" c="dimmed">Full Name</Text>
+              <Text fw={500}>{applicationData.student.fullName}</Text>
+            </div>
+            <div>
+              <Text size="sm" c="dimmed">Date of Birth</Text>
+              <Text fw={500}>{formatDate(applicationData.student.dateOfBirth)}</Text>
+            </div>
+          </Group>
 
-        {/* <Divider my="sm" /> */}
+          <Group grow mt="md">
+            <div>
+              <Text size="sm" c="dimmed">School</Text>
+              <Text fw={500}>{applicationData.student.primarySchool}</Text>
+            </div>
+            <div>
+              <Text size="sm" c="dimmed">Grade</Text>
+              <Text fw={500}>{applicationData.student.grade}</Text>
+            </div>
+          </Group>
+        </Box>
+      </Card>
 
-        {selectedStudent && (
-          <>
-            <Text fw={500} mb="xs">{t('status.studentInfo')}</Text>
-            <Box className='sm:ml-5'>
-              <Group grow>
-                <div>
-                  <Text size="sm" color="dimmed">{t('status.studentName')}</Text>
-                  <Text fw={500}>{selectedStudent.fullName || '—'}</Text>
-                </div>
-                <div>
-                  <Text size="sm" color="dimmed">{t('status.studentId')}</Text>
-                  <Text fw={500}>{selectedStudent.id || '—'}</Text>
-                </div>
-              </Group>
-              <Group grow mt="md">
-                <div>
-                  <Text size="sm" color="dimmed">{t('status.dateOfBirth')}</Text>
-                  <Text fw={500}>{selectedStudent.dateOfBirth
-                    ? new Date(selectedStudent.dateOfBirth).toLocaleDateString('vi-VN')
-                    : '—'}
-                  </Text>
-                </div>
-                <div>
-                  <Text size="sm" color="dimmed">{t('status.gender')}</Text>
-                  <Text fw={500}>{selectedStudent.gender || '—'}</Text>
-                </div>
-              </Group>
+      {/* Application Status Card */}
+      <Card shadow="sm" padding="lg" radius="md" withBorder>
+        <Card.Section withBorder inheritPadding py="xs">
+          <Group>
+            <Text fw={500}>Application Status</Text>
+            <Badge
+              color={getStatusColor(applicationData.status)}
+              leftSection={getStatusIcon(applicationData.status)}
+            >
+              {applicationData.status.toUpperCase()}
+            </Badge>
+          </Group>
+        </Card.Section>
+
+        <Stack mt="md">
+          <Group grow>
+            <div>
+              <Text size="sm" c="dimmed">Application ID</Text>
+              <Text fw={500}>{applicationData.id}</Text>
+            </div>
+            <div>
+              <Text size="sm" c="dimmed">Submitted Date</Text>
+              <Text fw={500}>{formatDate(applicationData.createdAt)}</Text>
+            </div>
+          </Group>
+
+          {applicationData.examNumber && (
+            <Group grow>
+              <div>
+                <Text size="sm" c="dimmed">Exam Number</Text>
+                <Text fw={500}>{applicationData.examNumber}</Text>
+              </div>
+              <div>
+                <Text size="sm" c="dimmed">Exam Room</Text>
+                <Text fw={500}>{applicationData.examRoom}</Text>
+              </div>
+            </Group>
+          )}
+
+          {/* Points Breakdown */}
+          {pointsBreakdown && (
+            <Box mt="md">
+              <Text fw={500} mb="xs">Points Breakdown</Text>
+              <Table>
+                <Table.Tbody>
+                  <Table.Tr>
+                    <Table.Td>Academic Points</Table.Td>
+                    <Table.Td align="right" fw={500}>{pointsBreakdown.breakdown.academicPoints}</Table.Td>
+                  </Table.Tr>
+                  <Table.Tr>
+                    <Table.Td>Competition Points</Table.Td>
+                    <Table.Td align="right" fw={500}>{pointsBreakdown.breakdown.competitionPoints}</Table.Td>
+                  </Table.Tr>
+                  <Table.Tr>
+                    <Table.Td>Priority Points</Table.Td>
+                    <Table.Td align="right" fw={500}>{pointsBreakdown.breakdown.priorityPoints}</Table.Td>
+                  </Table.Tr>
+                  <Table.Tr>
+                    <Table.Td fw={500}>Total Points</Table.Td>
+                    <Table.Td align="right" fw={700}>{pointsBreakdown.totalPoints}</Table.Td>
+                  </Table.Tr>
+                </Table.Tbody>
+              </Table>
             </Box>
-          </>
+          )}
+        </Stack>
+
+        {applicationData.rejectionReason && (
+          <Alert
+            icon={<IconAlertCircle size={16} />}
+            title="Rejection Reason"
+            color="red"
+            mt="md"
+          >
+            {applicationData.rejectionReason}
+          </Alert>
         )}
       </Card>
 
-      {/* Display warning if no application exists */}
-      {!hasApplication ? (
-        <>
-          <Alert
-            icon={<IconInfoCircle size={16} />}
-            title={t('status.noApplication')}
-            color="yellow"
+      {/* Timeline Card */}
+      <Card shadow="sm" padding="lg" radius="md" withBorder>
+        <Card.Section withBorder inheritPadding py="xs">
+          <Group>
+            <IconCalendarEvent size={20} />
+            <Text fw={500}>Application Timeline</Text>
+          </Group>
+        </Card.Section>
+
+        <Timeline active={
+          applicationData.status === 'approved' ? 3
+            : applicationData.status === 'rejected' ? 3
+              : applicationData.verificationDate ? 2
+                : 1
+        } bulletSize={24} lineWidth={2} mt="md">
+          <Timeline.Item
+            bullet={<IconFileCheck size={16} />}
+            title="Application Submitted"
           >
-            {t('status.noApplicationDesc')}
-          </Alert>
+            <Text c="dimmed" size="sm">{formatDate(applicationData.createdAt)}</Text>
+          </Timeline.Item>
 
-          <Button
-            component="a"
-            href="/dashboard/upload-documents"
-            variant="filled"
-            color="blue"
-            fullWidth
-          // className='max-w-xl'
+          <Timeline.Item
+            bullet={<IconHourglassHigh size={16} />}
+            title="Document Verification"
           >
-            {t('status.createApplication')}
-          </Button>
-        </>
-      ) : (
-        <>
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Card.Section withBorder inheritPadding py="xs">
-              <Group>
-                <Text fw={500}>{t('status.applicationStatus')}</Text>
-                <Badge
-                  color={getStatusColor(application?.status)}
-                  leftSection={getStatusIcon(application?.status)}
-                >
-                  {application?.status === 'approved'
-                    ? t('status.approved')
-                    : application?.status === 'rejected'
-                      ? t('status.rejected')
-                      : t('status.pending')
-                  }
-                </Badge>
-              </Group>
-            </Card.Section>
-
-            <Group grow mt="md">
-              <div>
-                <Text size="sm" color="dimmed">{t('status.applicationId')}</Text>
-                <Text fw={500}>{application?.id || '—'}</Text>
-              </div>
-
-              <div>
-                <Text size="sm" color="dimmed">{t('status.submissionDate')}</Text>
-                <Text fw={500}>{application?.createdAt
-                  ? formatDate(application.createdAt)
-                  : '—'}
-                </Text>
-              </div>
-
-              <div>
-                <Text size="sm" color="dimmed">{t('status.lastUpdated')}</Text>
-                <Text fw={500}>{application?.updatedAt
-                  ? formatDate(application.updatedAt)
-                  : '—'}
-                </Text>
-              </div>
-            </Group>
-
-            <div className="mt-4">
-              <Text size="sm" color="dimmed">{t('status.totalPoints')}</Text>
-              <Text fw={700} size="xl">{formatPoints(calculateTotalPoints())}</Text>
-            </div>
-
-            {application?.rejectionReason && (
-              <Alert
-                icon={<IconAlertCircle size={16} />}
-                title={t('status.rejectionReason')}
-                color="red"
-                mt="md"
-              >
-                {application.rejectionReason}
-              </Alert>
-            )}
-          </Card>
-
-          {/* Timeline of application status */}
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Card.Section withBorder inheritPadding py="xs">
-              <Text fw={500}>{t('status.timeline')}</Text>
-            </Card.Section>
-
-            <Timeline active={
-              application?.status === 'approved' ? 3
-                : application?.status === 'rejected' ? 3
-                  : application?.verificationDate ? 2
-                    : 1
-            } bulletSize={24} lineWidth={2} mt="md">
-              <Timeline.Item
-                bullet={<IconFileCheck size={16} />}
-                title={t('status.submitted')}
-                color="blue"
-              >
-                <Text color="dimmed" size="sm">{
-                  application?.createdAt ? formatDate(application.createdAt) : ''
-                }</Text>
-                <Text size="xs" mt={4}>{t('status.submittedDesc')}</Text>
-              </Timeline.Item>
-
-              <Timeline.Item
-                bullet={<IconHourglassHigh size={16} />}
-                title={t('status.verification')}
-                color={application?.verificationDate ? "blue" : "gray"}
-              >
-                <Text color="dimmed" size="sm">{
-                  application?.verificationDate
-                    ? formatDate(application.verificationDate)
-                    : t('status.pending')
-                }</Text>
-                <Text size="xs" mt={4}>{t('status.verificationDesc')}</Text>
-              </Timeline.Item>
-
-              <Timeline.Item
-                bullet={
-                  application?.status === 'approved'
-                    ? <IconCheck size={16} />
-                    : application?.status === 'rejected'
-                      ? <IconX size={16} />
-                      : <IconHourglassHigh size={16} />
-                }
-                title={
-                  application?.status === 'approved'
-                    ? t('status.approved')
-                    : application?.status === 'rejected'
-                      ? t('status.rejected')
-                      : t('status.decision')
-                }
-                color={
-                  application?.status === 'approved'
-                    ? "blue"
-                    : application?.status === 'rejected'
-                      ? "red"
-                      : "gray"
-                }
-              >
-                <Text color="dimmed" size="sm">{
-                  application?.status === 'pending'
-                    ? t('status.pending')
-                    : application?.verificationDate
-                      ? formatDate(application.verificationDate)
-                      : ''
-                }</Text>
-                <Text size="xs" mt={4}>
-                  {application?.status === 'approved'
-                    ? t('status.approvedDesc')
-                    : application?.status === 'rejected'
-                      ? t('status.rejectedDesc')
-                      : t('status.decisionDesc')
-                  }
-                </Text>
-              </Timeline.Item>
-
-              {application?.status === 'approved' && (
-                <Timeline.Item
-                  bullet={<IconCalendarEvent size={16} />}
-                  title={t('status.scheduling')}
-                  color="blue"
-                >
-                  {/* Show schedule info or button to select schedule */}
-                  {/* Implementation will depend on schedule data structure */}
-                </Timeline.Item>
-              )}
-            </Timeline>
-          </Card>
-
-          {/* Documents section */}
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Card.Section withBorder inheritPadding py="xs">
-              <Text fw={500}>{t('status.documents')}</Text>
-            </Card.Section>
-
-            <Text size="sm" color="dimmed" mt="md" mb="md">
-              {t('status.documentsDesc')}
+            <Text c="dimmed" size="sm">
+              {applicationData.verificationDate 
+                ? formatDate(applicationData.verificationDate)
+                : 'Pending'
+              }
             </Text>
-            {application && (
-              <Button
-                component="a"
-                href={`/dashboard/documents/${application?.id}`}
-                fullWidth
-                variant="light"
-              >
-                {t('status.viewDocuments')}
-              </Button>
-            )}
-          </Card>
-        </>
+          </Timeline.Item>
+
+          <Timeline.Item
+            bullet={getStatusIcon(applicationData.status)}
+            title="Final Decision"
+          >
+            <Text c="dimmed" size="sm">
+              {applicationData.status === 'pending'
+                ? 'Pending'
+                : formatDate(applicationData.updatedAt)
+              }
+            </Text>
+          </Timeline.Item>
+
+          {applicationData.status === 'approved' && (
+            <Timeline.Item
+              bullet={<IconCalendarEvent size={16} />}
+              title="Exam Schedule"
+            >
+              <Text c="dimmed" size="sm">
+                {applicationData.examNumber
+                  ? `Room ${applicationData.examRoom} - Number ${applicationData.examNumber}`
+                  : 'Schedule not assigned'
+                }
+              </Text>
+              {/* {!applicationData.examNumber && (
+                <Button
+                  variant="light"
+                  size="xs"
+                  mt="xs"
+                  onClick={handleScheduleClick}
+                >
+                  Select Schedule
+                </Button>
+              )} */}
+            </Timeline.Item>
+          )}
+        </Timeline>
+      </Card>
+
+      {/* Documents Card */}
+      <Card shadow="sm" padding="lg" radius="md" withBorder>
+        <Card.Section withBorder inheritPadding py="xs">
+          <Group>
+            <IconFileCheck size={20} />
+            <Text fw={500}>Submitted Documents</Text>
+          </Group>
+        </Card.Section>
+
+        {applicationData.documents.length > 0 ? (
+          <List spacing="xs" mt="md">
+            {applicationData.documents.map((doc: any) => (
+              <List.Item key={doc.id}>
+                <Group justify="space-between">
+                  <Text size="sm">{doc.fileName}</Text>
+                  <Text size="xs" c="dimmed">{formatDate(doc.uploadedAt)}</Text>
+                </Group>
+              </List.Item>
+            ))}
+          </List>
+        ) : (
+          <Text c="dimmed" mt="md">No documents uploaded yet.</Text>
+        )}
+
+        <Button
+          component="a"
+          href={`/dashboard/documents/${applicationData.id}`}
+          variant="light"
+          fullWidth
+          mt="md"
+        >
+          Manage Documents
+        </Button>
+      </Card>
+
+      {/* Competition Results Card */}
+      {applicationData.student.competitionResults && applicationData.student.competitionResults.length > 0 && (
+        <Card shadow="sm" padding="lg" radius="md" withBorder>
+          <Card.Section withBorder inheritPadding py="xs">
+            <Group>
+              <IconTrophy size={20} />
+              <Text fw={500}>Competition Results</Text>
+            </Group>
+          </Card.Section>
+
+          <Table mt="md">
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Competition</Table.Th>
+                <Table.Th>Level</Table.Th>
+                <Table.Th>Achievement</Table.Th>
+                <Table.Th>Points</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {applicationData.student.competitionResults.map((result: any, index: number) => (
+                <Table.Tr key={index}>
+                  <Table.Td>{result.competitionId}</Table.Td>
+                  <Table.Td>{result.level}</Table.Td>
+                  <Table.Td>{result.achievement}</Table.Td>
+                  <Table.Td>{result.points}</Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
+        </Card>
       )}
     </div>
   );

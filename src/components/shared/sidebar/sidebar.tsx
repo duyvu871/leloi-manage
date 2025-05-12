@@ -9,6 +9,9 @@ import {
 	Users,
 	Calendar,
 	CheckCircle,
+	History,
+	ChartBar,
+	MessageCircle
 } from 'lucide-react';
 import { cn } from '@/libs/tailwind/tailwind-merge';
 import { useLocale } from 'next-intl';
@@ -40,16 +43,26 @@ const Sidebar = ({ userType }: SidebarProps) => {
 			icon: FileText,
 		},
 		{
-			name: 'Tải lên học bạ & chứng chỉ',
-			href: internalizePath('/dashboard/upload-documents'),
-			icon: Upload,
+			name: 'Thời gian tuyển sinh',
+			href: internalizePath('/dashboard/timeline'),
+			icon: Calendar,
+		},
+		{
+			name: 'Lịch sử đăng ký',
+			href: internalizePath('/dashboard/registration-history'),
+			icon: History,
 		},
 	];
 
 	const managerMenuItems = [
 		{
+			name: 'Tổng quan',
+			href: internalizePath('/admin'),
+			icon: ChartBar,
+		},
+		{
 			name: 'Lên lịch nộp hồ sơ',
-			href: internalizePath('/admin/schedule'),
+			href: internalizePath('/admin/timeline'),
 			icon: Calendar,
 		},
 		{
@@ -63,15 +76,25 @@ const Sidebar = ({ userType }: SidebarProps) => {
 			icon: FileText,
 		},
 		{
+			name: 'Hồ sơ đang chờ xét duyệt',
+			href: internalizePath('/admin/pending'),
+			icon: FileText,
+		},
+		{
 			name: 'Xác nhận hồ sơ trực tiếp',
 			href: internalizePath('/admin/confirm-applications'),
 			icon: CheckCircle,
 		},
 		{
-			name: 'Cài đặt',
-			href: internalizePath('/admin/settings'),
-			icon: Settings,
+			name: 'Phản ánh',
+			href: internalizePath('/admin/feedback'),
+			icon: MessageCircle,
 		},
+		// {
+		// 	name: 'Cài đặt',
+		// 	href: internalizePath('/admin/settings'),
+		// 	icon: Settings,
+		// },
 	];
 
 	const menuItems = userType === 'parent' ? parentMenuItems : managerMenuItems;

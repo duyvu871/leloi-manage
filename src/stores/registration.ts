@@ -26,6 +26,9 @@ export const priorityPointAtom = atom<PriorityPoint | null>(null);
 // Store competition results
 export const competitionResultsAtom = atom<CompetitionResult[]>([]);
 
+// Academic record
+// export const academicRecordAtom = atom<AcademicRecord | null>(null);
+
 // Store for the complete registration submission data
 export const registrationSubmissionDataAtom = atom<{
     student: CreateStudentDto | null;

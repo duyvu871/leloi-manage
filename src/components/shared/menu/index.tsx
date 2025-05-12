@@ -6,6 +6,7 @@ import { useRouter } from 'src/i18n/navigation';
 import { userAtom } from '@/stores/user';
 import { use, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { clearAllDraftData } from '@/utils/localstorage';
 // import { useTranslation } from 'react-i18next';
 
 export function UserMenu() {
@@ -18,6 +19,7 @@ export function UserMenu() {
 
   const handleLogout = () => {
     setAuthToken(null);
+    clearAllDraftData();
     router.push('/auth/login');
   };
 

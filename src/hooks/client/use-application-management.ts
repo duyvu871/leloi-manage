@@ -26,11 +26,12 @@ export const useApplicationManagement = ({ applicationId }: UseApplicationManage
 
     try {
       const result = await applicationApi.getApplicationStatus(targetAppId);
+      console.log(result);
       setApplication(result);
     } catch (err) {
       console.error('Failed to load application status:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load application status');
-      toast.error('Không thể tải thông tin trạng thái hồ sơ. Vui lòng thử lại sau.');
+      // setError(err instanceof Error ? err.message : 'Failed to load application status');
+      // toast.error('Không thể tải thông tin trạng thái hồ sơ. Vui lòng thử lại sau.');
     } finally {
       setIsLoading(false);
     }
@@ -61,15 +62,15 @@ export const useApplicationManagement = ({ applicationId }: UseApplicationManage
       );
 
       setApplication(result);
-      toast.success(`Trạng thái hồ sơ đã được cập nhật thành ${status === 'approved' ? 'đã duyệt' :
-          status === 'rejected' ? 'từ chối' : 'đang xử lý'
-        }`);
+      // toast.success(`Trạng thái hồ sơ đã được cập nhật thành ${status === 'approved' ? 'đã duyệt' :
+      //     status === 'rejected' ? 'từ chối' : 'đang xử lý'
+      //   }`);
 
       return result;
     } catch (err) {
       console.error('Failed to update application status:', err);
       setError(err instanceof Error ? err.message : 'Failed to update application status');
-      toast.error('Không thể cập nhật trạng thái hồ sơ. Vui lòng thử lại sau.');
+      // toast.error('Không thể cập nhật trạng thái hồ sơ. Vui lòng thử lại sau.');
       return null;
     } finally {
       setIsLoading(false);
@@ -88,7 +89,7 @@ export const useApplicationManagement = ({ applicationId }: UseApplicationManage
     } catch (err) {
       console.error('Failed to load available schedule slots:', err);
       setError(err instanceof Error ? err.message : 'Failed to load available schedule slots');
-      toast.error('Không thể tải lịch còn trống. Vui lòng thử lại sau.');
+      // toast.error('Không thể tải lịch còn trống. Vui lòng thử lại sau.');
       return [];
     } finally {
       setIsLoading(false);
@@ -109,12 +110,12 @@ export const useApplicationManagement = ({ applicationId }: UseApplicationManage
     try {
       const result = await applicationApi.assignScheduleSlot(targetAppId, scheduleSlotId);
       setApplication(result.application);
-      toast.success('Đã phân lịch thành công!');
+      // toast.success('Đã phân lịch thành công!');
       return result;
     } catch (err) {
       console.error('Failed to assign schedule slot:', err);
       setError(err instanceof Error ? err.message : 'Failed to assign schedule slot');
-      toast.error('Không thể phân lịch. Vui lòng thử lại sau.');
+      // toast.error('Không thể phân lịch. Vui lòng thử lại sau.');
       return null;
     } finally {
       setIsLoading(false);

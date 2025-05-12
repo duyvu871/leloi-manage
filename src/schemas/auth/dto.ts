@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { authCredentialSchema } from "./schema";
 import { CompetitionResult, PriorityPoint } from '@/types/points';
-import { D } from "@tanstack/react-query-devtools/build/legacy/ReactQueryDevtools-Cn7cKi7o";
 
 export type AuthCredentialSchema = z.infer<typeof authCredentialSchema>;
 
@@ -72,6 +71,21 @@ export interface DocumentDto {
     mimeType: string;
     createdAt: Date;
     updatedAt: Date;
+}
+
+export interface AcademicGradeDto {
+	grade: number;
+	math?: number;
+	vietnamese?: number;
+	english?: number;
+	science?: number;
+	history?: number;
+	award?: string;
+}
+
+export interface AcademicRecordDto {
+	grades: AcademicGradeDto[];
+	award?: string;
 }
 
 export interface StudentInfoDto {
@@ -159,6 +173,7 @@ export interface StudentInfoDto {
     } | null;
 
 	application?: ApplicationDto | null;
+	academicRecords?: AcademicRecordDto;
 }
 
 export interface ProfileResponse {

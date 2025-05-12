@@ -12,7 +12,7 @@ import {
 } from "@/schemas/registration/dto";
 import { SuccessResponse } from "@/types/api/response";
 import { axiosRequestWithException } from "@lib/apis/base";
-import { Student } from "@/types/student";
+import { StudentDto } from "@/types/student";
 
 
 // Type definition for registration status query
@@ -203,13 +203,13 @@ export const getRegistrationByStudentId = async (studentId: number) => {
 };
 
 // Get a student by ID
-export const getStudentById = async (studentId: number): Promise<Student> => {
+export const getStudentById = async (studentId: number): Promise<StudentDto> => {
     const requestConfig = {
         method: 'get',
         url: `${API_ROUTES.v1.REGISTRATION.STUDENT}/${studentId}/details`,
     };
     
-    return (await axiosRequestWithException<SuccessResponse<{ student: Student }>>(
+    return (await axiosRequestWithException<SuccessResponse<{ student: StudentDto }>>(
         requestConfig,
         () => console.log("Student data fetched successfully")
     )).data.student;
@@ -234,5 +234,129 @@ export const uploadDocument = async (applicationId: number, file: File, type: st
     return (await axiosRequestWithException<SuccessResponse<{ document: { id: number } }>>(
         requestConfig,
         () => console.log("Document uploaded successfully")
+    )).data;
+};
+
+// Get application status and details
+export const getApplicationStatus = async (applicationId: number) => {
+    const requestConfig = {
+        method: 'get',
+        url: `${API_ROUTES.v1.REGISTRATION.APPLICATION}/${applicationId}/status`,
+    };
+    
+    return (await axiosRequestWithException<SuccessResponse<{
+        application: {
+            id: number;
+            status: 'pending' | 'approved' | 'rejected';
+            isEligible: boolean;
+            rejectionReason?: string;
+            verificationDate?: string;
+            createdAt: string;
+            updatedAt: string;
+            examNumber?: string;
+            examRoom?: string;
+            documents: Array<{
+                id: number;
+                type: string;
+                fileName: string;
+                fileUrl: string;
+                uploadedAt: string;
+            }>;
+            student: {
+                id: number;
+                fullName: string;
+                dateOfBirth: string;
+                gender: string;
+                educationDepartment: string;
+                primarySchool: string;
+                grade: string;
+                academicRecords: {
+                    grades: Array<{
+                        grade: number;
+                        math?: number;
+                        vietnamese?: number;
+                        english?: number;
+                        science?: number;
+                        history?: number;
+                        award?: string;
+                    }>;
+                };
+                competitionResults?: Array<{
+                    competitionId: string;
+                    level: 'city' | 'national';
+                    achievement: 'none' | 'first' | 'second' | 'third';
+                    points: number;
+                }>;
+                priorityPoint?: {
+                    type: string;
+                    points: number;
+                };
+            };
+        };
+    }>>(
+        requestConfig,
+        () => console.log("Application status fetched successfully")
+    )).data;
+};
+
+// // Get available exam schedule slots
+// export const getAvailableScheduleSlots = async () => {
+//     const requestConfig = {
+//         method: 'get',
+//         url: API_ROUTES.v1.REGISTRATION.SCHEDULE_SLOTS,
+//     };
+    
+//     return (await axiosRequestWithException<SuccessResponse<{
+//         slots: Array<{
+//             id: number;
+//             date: string;
+//             startTime: string;
+//             endTime: string;
+//             room: string;
+//             capacity: number;
+//             availableSeats: number;
+//         }>;
+//     }>>(
+//         requestConfig,
+//         () => console.log("Available schedule slots fetched successfully")
+//     )).data;
+// };
+
+// Assign schedule slot to application
+export const assignScheduleSlot = async (applicationId: number, slotId: number) => {
+    const requestConfig = {
+        method: 'post',
+        url: `${API_ROUTES.v1.REGISTRATION.APPLICATION}/${applicationId}/schedule`,
+        data: { slotId },
+    };
+    
+    return (await axiosRequestWithException<SuccessResponse<{
+        success: boolean;
+        examNumber?: string;
+        examRoom?: string;
+        scheduledAt: string;
+    }>>(
+        requestConfig,
+        () => console.log("Schedule slot assigned successfully")
+    )).data;
+};
+
+// Calculate total points for an application
+export const calculateApplicationPoints = async (applicationId: number) => {
+    const requestConfig = {
+        method: 'get',
+        url: `${API_ROUTES.v1.REGISTRATION.APPLICATION}/${applicationId}/points`,
+    };
+    
+    return (await axiosRequestWithException<SuccessResponse<{
+        totalPoints: number;
+        breakdown: {
+            academicPoints: number;
+            competitionPoints: number;
+            priorityPoints: number;
+        };
+    }>>(
+        requestConfig,
+        () => console.log("Application points calculated successfully")
     )).data;
 };

@@ -1,0 +1,117 @@
+{
+	"Lớp 1": {
+		"Tên": "Lê Hoàng Hải",
+		"Điểm": [
+			{ "Môn": "Tiếng Việt", "Mức": "T", "Điểm": 10 },
+			{ "Môn": "Toán", "Mức": "T", "Điểm": 10 },
+			{ "Môn": "Tự nhiên và xã hội", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Đạo đức", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Âm nhạc", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Mỹ thuật", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Thủ công", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Thể dục", "Mức": "T", "Điểm": "unk" }
+		],
+		"Phẩm chất": {
+			"Chăm học, chăm làm": "T",
+			"Tự tin, trách nhiệm": "T",
+			"Trung thực, ki luật": "T",
+			"Đoàn kết, yêu thương": "T"
+		},
+		"Năng lực": { "Tự phục vụ, tự quản": "T", "Hợp tác": "T", "Tự học và giải quyết vấn đề": "T" }
+	},
+	"Lớp 2": {
+		"Tên": "Lê Hoàng Hải",
+		"Điểm": [
+			{ "Môn": "Tiếng Việt", "Mức": "T", "Điểm": 10 },
+			{ "Môn": "Toán", "Mức": "T", "Điểm": 10 },
+			{ "Môn": "Tự nhiên và Xã hội/Khoa học", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Lịch sử và Địa lí", "Mức": "unk", "Điểm": "unk" },
+			{ "Môn": "Tiếng Anh", "Mức": "unk", "Điểm": "unk" },
+			{ "Môn": "Tin học", "Mức": "unk", "Điểm": "unk" },
+			{ "Môn": "Tiếng dân tộc", "Mức": "unk", "Điểm": "unk" },
+			{ "Môn": "Đạo đức", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Âm nhạc", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Mĩ thuật", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Thủ công/Kĩ thuật", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Thể dục", "Mức": "T", "Điểm": "unk" }
+		],
+		"Phẩm chất": {
+			"Chăm học, chăm làm": "T",
+			"Tự tin, trách nhiệm": "T",
+			"Trung thực, kỉ luật": "T",
+			"Đoàn kết, yêu thương": "T"
+		},
+		"Năng lực": { "Tự phục vụ, tự quản": "T", "Hợp tác": "T", "Tự học, giải quyết vấn đề": "T" }
+	},
+	"Lớp 3": {
+		"Tên": "Lê Hoàng Hải",
+		"Điểm": [
+			{ "Môn": "Tiếng Việt", "Mức": "T", "Điểm": 10 },
+			{ "Môn": "Toán", "Mức": "T", "Điểm": 10 },
+			{ "Môn": "Tự nhiên và Xã hội/Khoa học", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Lịch sử và Địa lí", "Mức": "unk", "Điểm": "unk" },
+			{ "Môn": "Tiếng Anh", "Mức": "T", "Điểm": 10 },
+			{ "Môn": "Tin học", "Mức": "T", "Điểm": 10 },
+			{ "Môn": "Tiếng dân tộc", "Mức": "unk", "Điểm": "unk" },
+			{ "Môn": "Đạo đức", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Âm nhạc", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Mĩ thuật", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Thủ công/ Kĩ thuật", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Thể dục", "Mức": "T", "Điểm": "unk" }
+		],
+		"Phẩm chất": {
+			"Chăm học, chăm làm": "T",
+			"Tự tin, trách nhiệm": "T",
+			"Trung thực, kỉ luật": "T",
+			"Đoàn kết, yêu thương": "T"
+		},
+		"Năng lực": { "Tự phục vụ, tự quản": "T", "Hợp tác": "T", "Tự học, giải quyết vấn đề": "T" }
+	},
+	"Lớp 4": {
+		"Tên": "Lê Hoàng Hải",
+		"Điểm": [
+			{ "Môn": "Tiếng Việt", "Mức": "T", "Điểm": 10 },
+			{ "Môn": "Toán", "Mức": "T", "Điểm": 10 },
+			{ "Môn": "Tự nhiên và Xã hội / Khoa học", "Mức": "T", "Điểm": 10 },
+			{ "Môn": "Lịch sử và Địa lý", "Mức": "T", "Điểm": 9 },
+			{ "Môn": "Tiếng Anh", "Mức": "T", "Điểm": 9 },
+			{ "Môn": "Tin học", "Mức": "T", "Điểm": 9 },
+			{ "Môn": "Tiếng dân tộc", "Mức": "unk", "Điểm": "unk" },
+			{ "Môn": "Đạo đức", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Âm nhạc", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Mỹ thuật", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Thủ công/ Kĩ thuật", "Mức": "unk", "Điểm": "unk" },
+			{ "Môn": "Thể dục", "Mức": "unk", "Điểm": "unk" }
+		],
+		"Phẩm chất": {
+			"Chăm học, chăm làm": "T",
+			"Tự tin, trách nhiệm": "T",
+			"Trung thực, ki luật": "T",
+			"Đoàn kết, yêu thương": "T"
+		},
+		"Năng lực": { "Tự phục vụ, tự quản": "T", "Hợp tác": "T", "Tự học, giải quyết vấn đề": "T" }
+	},
+	"Lớp 5": {
+		"Tên": "Lê Hoàng Hải",
+		"Điểm": [
+			{ "Môn": "Tiếng Việt", "Mức": "T", "Điểm": 10 },
+			{ "Môn": "Toán", "Mức": "T", "Điểm": 10 },
+			{ "Môn": "Tự nhiên và Xã hội / Khoa học", "Mức": "T", "Điểm": 10 },
+			{ "Môn": "Lịch sử và Địa lý", "Mức": "T", "Điểm": 10 },
+			{ "Môn": "Tiếng Anh", "Mức": "T", "Điểm": 10 },
+			{ "Môn": "Tin học", "Mức": "T", "Điểm": 10 },
+			{ "Môn": "Đạo đức", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Âm nhạc", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Mỹ thuật", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Thủ công/ Kĩ thuật", "Mức": "T", "Điểm": "unk" },
+			{ "Môn": "Thể dục", "Mức": "T", "Điểm": "unk" }
+		],
+		"Phẩm chất": {
+			"Chăm học, chăm làm": "T",
+			"Tự tin, trách nhiệm": "T",
+			"Trung thực, kỉ luật": "T",
+			"Đoàn kết, yêu thương": "T"
+		},
+		"Năng lực": { "Tự phục vụ, tự quản": "T", "Hợp tác": "T", "Tự học, giải quyết vấn đề": "T" }
+	}
+}

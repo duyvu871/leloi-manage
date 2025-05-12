@@ -24,6 +24,7 @@ import ToastLayout from '@/components/shared/layout/toast';
 import { DashboardShell } from '@/components/shared/layout/dashboard';
 import { IconLogout, IconUser } from '@tabler/icons-react';
 import { Button } from '@mantine/core';
+import { AdminDashboard } from '@/components/shared/layout/admin-dashboard';
 
 export const metadata: Metadata = {
 	title: 'Trường THCS Lê Lợi',
@@ -65,42 +66,45 @@ export default async function RootLayout({ children, params }: LandingLayoutProp
 						<JotaiProvider>
 							<MantineProviderClient>
 								<QueryClientProvider>
-								<ToastLayout>
-											<div className="min-h-screen flex flex-col bg-gray-100">
-												{/* Header */}
-												<header className="bg-primary text-white">
-													<div className="container mx-auto px-4 py-3 flex justify-between items-center">
-														<h1 className="text-xl font-bold">Hệ thống Quản lý Tuyển sinh - Quản lý</h1>
-														<div className="flex items-center space-x-4">
-															<span id="user-name" className="flex items-center">
-																<IconUser size={18} className="mr-2" />
-																Admin
-															</span>
-															<Button
-																variant="filled"
-																color="white"
-																className="text-primary hover:bg-gray-100"
-																rightSection={<IconLogout size={18} />}
-															>
-																Đăng xuất
-															</Button>
-														</div>
+									<ToastLayout>
+										<AdminDashboard>
+											{children}
+										</AdminDashboard>
+										{/* <div className="min-h-screen flex flex-col bg-gray-100"> */}
+											{/* Header */}
+											{/* <header className="bg-primary text-white">
+												<div className="container mx-auto px-4 py-3 flex justify-between items-center">
+													<h1 className="text-xl font-bold">Hệ thống Quản lý Tuyển sinh - Quản lý</h1>
+													<div className="flex items-center space-x-4">
+														<span id="user-name" className="flex items-center">
+															<IconUser size={18} className="mr-2" />
+															Admin
+														</span>
+														<Button
+															variant="filled"
+															color="white"
+															className="text-primary hover:bg-gray-100"
+															rightSection={<IconLogout size={18} />}
+														>
+															Đăng xuất
+														</Button>
 													</div>
-												</header>
+												</div>
+											</header> */}
 
-												{/* Main content */}
-												<main className="flex-grow">
-													{children}
-												</main>
+											{/* Main content */}
+											{/* <main className="flex-grow">
+												{children}
+											</main> */}
 
-												{/* Footer */}
-												<footer className="bg-gray-200 py-4">
-													<div className="container mx-auto px-4 text-center text-gray-600 text-sm">
-														&copy; {new Date().getFullYear()} Hệ thống Quản lý Tuyển sinh. All rights reserved.
-													</div>
-												</footer>
-											</div>
-										</ToastLayout>
+											{/* Footer */}
+											{/* <footer className="bg-gray-200 py-4">
+												<div className="container mx-auto px-4 text-center text-gray-600 text-sm">
+													&copy; {new Date().getFullYear()} Hệ thống Quản lý Tuyển sinh. All rights reserved.
+												</div>
+											</footer> */}
+										{/* </div> */}
+									</ToastLayout>
 								</QueryClientProvider>
 							</MantineProviderClient>
 						</JotaiProvider>

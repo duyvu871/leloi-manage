@@ -39,6 +39,15 @@ export const API_ROUTES = {
             DOCUMENT_UPLOAD: '/process/document-upload',
             APPLICATION: '/registration/application',
         },
+        TIMELINE: {
+            LIST: '/timeline',
+            ITEM: '/timeline/item',
+            IMPORT: '/timeline/import',
+            EXPORT: '/timeline/export',
+            REORDER: '/timeline/reorder',
+            BATCH: '/timeline/batch',
+            PUBLIC: '/timeline/public',
+        },  
         USER: {
             PROFILE: '/user/profile',
             SETTINGS: '/user/settings',
@@ -49,8 +58,20 @@ export const API_ROUTES = {
             PROFILE: '/admin/profile',
             DASHBOARD: '/admin/dashboard',
             USERS: '/admin/users',
+            STATS: '/admin/stats',
+            STUDENTS: '/admin/students',
+            PENDING: '/admin/pending',
+            VERIFY: '/admin/verify', 
+            STATS_DETAILED: '/admin/stats/detailed',
         },
-    }
-}
+    },
+    FEEDBACK: {
+        CREATE: '/api/v1/feedback',
+        LIST: '/api/v1/feedback',
+        DETAIL: '/api/v1/feedback',
+        UPDATE: '/api/v1/feedback',
+        DELETE: '/api/v1/feedback',
+    },
+} as const;
 
 export const getApiRoute = (version: string, route: string) => `/api/${version}${route}`;

@@ -9,7 +9,7 @@ import { ROUTES } from '@constant/path';
 import { checkCookie } from '@lib/apis/base';
 import { useMock } from 'config';
 import RingLoader from '@component/ui/loader';
-import { userAtom } from '@store/user';
+import { selectedStudentApplicationAtom, userAtom } from '@store/user';
 // import { mockParents } from '@/mock/data/user';
 import { getProfile } from '@/libs/apis/auth';
 
@@ -17,6 +17,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   const [, setUser] = useAtom(userAtom);
   const [, setIsAuthenticated] = useAtom(isAuthenticatedAtom);
   const [isLoading, setIsLoading] = useAtom(isLoadingAtom);
+  // const [, setSelectedUser] = useAtom(selectedStudentApplicationAtom)
   const router = useRouter();
 
   useEffect(() => {

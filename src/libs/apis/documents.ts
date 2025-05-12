@@ -13,11 +13,13 @@ export type DocumentUploadResponse = {
 // Upload a document and get extracted data
 export const uploadAndProcessDocument = async (
   applicationId: number,
-  file: File,
+  files: File[],
   type: string
 ): Promise<DocumentUploadResponse> => {
   const formData = new FormData();
-  formData.append('file', file);
+  files.forEach((file) => {
+    formData.append('files', file);
+  });
   formData.append('type', type);
   formData.append('applicationId', applicationId.toString());
   

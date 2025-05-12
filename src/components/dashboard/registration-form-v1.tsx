@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useState, useEffect, useCallback } from 'react';
+import { useForm, Controller, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { get } from 'lodash';
 import {
 	TextInput,
 	NumberInput,
@@ -41,25 +43,46 @@ import { DraftFormData } from '@/types/storage';
 import { STORAGE_KEYS } from '@/constants/storage';
 import { set } from 'zod';
 import { useRegistration } from '@/providers/registration-provider';
+import DocumentUpload from './document-upload';
+import FeedbackCard from '../feedback/feedback-card';
+
+type AcademicSubjectId = 'math' | 'vietnamese' | 'english' | 'science' | 'history';
+type StudentClassification = 'HTXS' | 'CTTVT' | 'CTTT' | '';
+
+const academicSubjectsConfig: Array<{
+	subjectId: AcademicSubjectId;
+	name: string;
+	disabledGrades: number[];
+}> = [
+	{ subjectId: 'math', name: 'Môn Toán', disabledGrades: [] },
+	{ subjectId: 'vietnamese', name: 'Môn Tiếng Việt', disabledGrades: [] },
+	{ subjectId: 'english', name: 'Môn Tiếng Anh', disabledGrades: [1, 2] },
+	{ subjectId: 'science', name: 'Môn Khoa học', disabledGrades: [1, 2, 3] },
+	{ subjectId: 'history', name: 'Lịch sử và Địa lý', disabledGrades: [1, 2, 3] },
+];
 
 const competitionResults = [
 	{
 		competitionId: 'creativityContest',
 		name: 'Cuộc thi sáng tạo khoa học kỹ thuật',
+		disabledLevel: ['city'],
 	},
 	{
 		competitionId: 'upuLetterContest',
 		name: 'Cuộc thi viết thư UPU',
+		disabledLevel: ['city'],
 	},
 	{
 		competitionId: 'sportsCompetition',
 		name: 'Cuộc thi thể thao',
+		disabledLevel: ['city'],
 	},
 	{
 		competitionId: 'englishOlympiad',
 		name: 'Olympic tiếng Anh',
+		disabledLevel: [''],
 	},
-] as const;
+];
 
 const levelOptions = [
 	{ value: 'city', label: 'Cấp Thành phố', disabled: true },
@@ -81,8 +104,123 @@ const achievementOptions = {
 	],
 } as const;
 
+const priorityPointsConfig = [
+	{
+		value: 'none',
+		label: 'Không có điểm ưu tiên',
+		points: 0,
+	},
+	{
+		value: 'type1',
+		label: '2.0 điểm',
+		description:
+			'Con liệt sĩ; con thương binh, bệnh binh mất sức lao động 81% trở lên; con của người được cấp "Giấy chứng nhận người hưởng chính sách như thương binh mà người được cấp Giấy chứng nhận người hưởng chính sách như thương binh bị suy giảm khả năng lao động 81% trở lên"; con của người hoạt động kháng chiến bị nhiễm chất độc hóa học.',
+		points: 2.0,
+	},
+	{
+		value: 'type2',
+		label: '1.5 điểm',
+		description:
+			'Con của Anh hùng lực lượng vũ trang, con của Anh hùng lao động, con của Bà mẹ Việt Nam anh hùng; con thương binh, bệnh binh mất sức lao động dưới 81%; con của người được cấp "Giấy chứng nhận người hưởng chính sách như thương binh mà người được cấp Giấy chứng nhận người hưởng chính sách như thương binh bị suy giảm khả năng lao động dưới 81%".',
+		points: 1.5,
+	},
+	{
+		value: 'type3',
+		label: '1.0 điểm',
+		description:
+			'Người có cha hoặc mẹ là người dân tộc thiểu số; người dân tộc thiểu số; học sinh ở vùng có điều kiện kinh tế - xã hội đặc biệt khó khăn (được quy định tại Quyết định 861/QĐ-TTg ngày 04/06/2021 của Thủ tướng Chính phủ và Quyết định số 497/QĐ-UBDT ngày 30/7/2024 của Bộ trưởng, Chủ nhiệm Ủy ban Dân tộc về việc phê duyệt điều chỉnh, bổ sung và hiệu chỉnh tên huyện, xã, thôn đặc biệt khó khăn; thôn thuộc vùng dân tộc thiểu số và miền núi giai đoạn 2021-2025).',
+		points: 1.0,
+	},
+];
+
+// Helper function to determine student classification based on their grades
+const determineStudentClassification = (
+	gradeData: any,
+	gradeNumber: number,
+	competitionResults?: any[],
+): StudentClassification => {
+	if (!gradeData) return '';
+
+	// Get the scores for this grade
+	const scores = {
+		math: gradeData.math,
+		vietnamese: gradeData.vietnamese,
+		english: gradeData.english,
+		science: gradeData.science,
+		history: gradeData.history,
+	};
+
+	// Case 1: All existing subjects have scores 9-10
+	let allScoresExcellent = true;
+	let allScoresPresent = true;
+
+	for (const subject of academicSubjectsConfig) {
+		// Skip subjects that are disabled for this grade
+		if (subject.disabledGrades.includes(gradeNumber)) continue;
+
+		const score = scores[subject.subjectId];
+
+		// If any score is missing
+		if (score === undefined || score === null) {
+			allScoresPresent = false;
+			break;
+		}
+
+		// If any score is less than 9
+		if (score < 9) {
+			allScoresExcellent = false;
+			break;
+		}
+	}
+
+	// For Case 1: All subjects must have excellent scores
+	if (allScoresPresent && allScoresExcellent) {
+		// Check if all scores are 9+ (for HTXS)
+		const allNineOrAbove = Object.values(scores).every(
+			score => score === undefined || score === null || score >= 9,
+		);
+
+		if (allNineOrAbove) {
+			return 'HTXS'; // Hoàn Thành xuất sắc
+		}
+	}
+
+	// Case 2: Special subjects have perfect scores
+	if (gradeNumber >= 3 && gradeNumber <= 5) {
+		// For grades 3-5, check if Math and Vietnamese are 10
+		const mathPerfect = scores.math === 10;
+		const vietnamesePerfect = scores.vietnamese === 10;
+
+		// English must be 9+
+		const englishExcellent =
+			scores.english === undefined || scores.english === null || scores.english >= 9;
+
+		if (mathPerfect && vietnamesePerfect && englishExcellent) {
+			return 'CTTVT'; // Có thành tích vượt trội
+		}
+	}
+
+	// // Case 3: Check for special achievements in competitions
+	// if (competitionResults && competitionResults.length > 0) {
+	// 	// Check for any national level achievements
+	// 	const hasSignificantAchievement = competitionResults.some(
+	// 		result => result.achievement !== 'none' &&
+	// 				  (result.level === 'national' ||
+	// 				   (result.level === 'city' && result.achievement === 'first'))
+	// 	);
+
+	// 	if (hasSignificantAchievement) {
+	// 		return 'CTTT'; // Có thành tích thi đấu
+	// 	}
+	// }
+
+	// No special classification
+	return '';
+};
+
 export default function RegistrationFormV1() {
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [isReady, setIsReady] = useState(false);
 	const [confirmModalOpened, { open: openConfirmModal, close: closeConfirmModal }] =
 		useDisclosure(false);
 	const [formValues, setFormValues] = useState<RegistrationFormData | null>(null);
@@ -100,19 +238,23 @@ export default function RegistrationFormV1() {
 	const {
 		control,
 		handleSubmit,
-		formState: { errors },
+		formState: { errors, isSubmitting: formIsSubmitting },
 		watch,
 		register,
 		setValue,
 		getFieldState,
+		trigger,
 		...form
 	} = useForm<RegistrationFormData>({
 		resolver: zodResolver(registrationSchema),
+		mode: 'onChange',
 		defaultValues: {
 			studentInfo: {
 				gender: (selectedStudent?.gender as 'male' | 'female') || 'male',
 				fullName: selectedStudent?.fullName || '',
-				dateOfBirth: selectedStudent?.dateOfBirth ? new Date(selectedStudent?.dateOfBirth.toString()) : new Date(),
+				dateOfBirth: selectedStudent?.dateOfBirth
+					? new Date(selectedStudent?.dateOfBirth.toString())
+					: new Date(),
 				placeOfBirth: selectedStudent?.placeOfBirth || '',
 				educationDepartment: selectedStudent?.educationDepartment || '',
 				primarySchool: selectedStudent?.primarySchool || '',
@@ -122,6 +264,55 @@ export default function RegistrationFormV1() {
 			priorityPoint: {
 				type: 'none',
 				points: 0,
+			},
+			academicRecords: {
+				grades: [
+					{
+						grade: 1,
+						math: undefined,
+						vietnamese: undefined,
+						english: undefined,
+						science: undefined,
+						history: undefined,
+						award: undefined,
+					},
+					{
+						grade: 2,
+						math: undefined,
+						vietnamese: undefined,
+						english: undefined,
+						science: undefined,
+						history: undefined,
+						award: undefined,
+					},
+					{
+						grade: 3,
+						math: undefined,
+						vietnamese: undefined,
+						english: undefined,
+						science: undefined,
+						history: undefined,
+						award: undefined,
+					},
+					{
+						grade: 4,
+						math: undefined,
+						vietnamese: undefined,
+						english: undefined,
+						science: undefined,
+						history: undefined,
+						award: undefined,
+					},
+					{
+						grade: 5,
+						math: undefined,
+						vietnamese: undefined,
+						english: undefined,
+						science: undefined,
+						history: undefined,
+						award: undefined,
+					},
+				],
 			},
 		},
 	});
@@ -148,7 +339,7 @@ export default function RegistrationFormV1() {
 		// Khởi tạo dữ liệu competitionResults với year đúng
 		const currentYear = new Date().getFullYear();
 
-		// Tạo từng phần tử riêng biệt với year được đặt chính xác
+		// Tạo từng phần tử riêng biệt với year được đặt chính xác và đảm bảo tất cả trường đều có giá trị
 		const compResults = competitionResults
 			.map((competition, compIndex) => {
 				return levelOptions.map((level, levelIndex) => {
@@ -162,6 +353,9 @@ export default function RegistrationFormV1() {
 				});
 			})
 			.flat() as RegistrationFormData['competitionResults'];
+
+		// Đặt giá trị cho competitionResults trước khi load draft data
+		setValue('competitionResults', compResults);
 
 		const draftData = getLocalStorageItem<DraftFormData>(STORAGE_KEYS.REGISTRATION_FORM_DRAFT);
 		if (draftData) {
@@ -186,7 +380,20 @@ export default function RegistrationFormV1() {
 							...draftData.commitment,
 					  }
 					: currentValues.commitment,
-				competitionResults: draftData ? compResults : [],
+				competitionResults:
+					draftData.competitionResults && draftData.competitionResults.length > 0
+						? draftData.competitionResults.map((item, index) => ({
+								...(compResults ? (compResults[index] ? compResults[index] : {}) : {}), // Sử dụng giá trị mặc định từ compResults nếu có
+								...(item
+									? {
+											...item,
+											level: item.level as 'city' | 'national',
+											achievement: item.achievement as 'none' | 'first' | 'second' | 'third',
+											year: item.year || currentYear, // Đảm bảo year luôn có giá trị
+									  }
+									: {}), // Sử dụng giá trị từ draftData nếu có
+						  }))
+						: compResults,
 			});
 
 			const lastSaved = getLocalStorageItem<string>(STORAGE_KEYS.LAST_SAVED);
@@ -263,18 +470,85 @@ export default function RegistrationFormV1() {
 		};
 	}, [watch]);
 
-	const onSubmit = async (data: RegistrationFormData) => {
-		// Store form values to display in confirmation modal
-		setFormValues(data);
-		console.log('Form values:', data);
+	// Add a function to classify students after form loads
+	const updateClassifications = useCallback(
+		(gradeIndex: number) => {
+			const grades = form.getValues('academicRecords.grades');
+			const competitionResults = form.getValues('competitionResults');
 
-		// Open the confirmation modal
-		openConfirmModal();
+			if (grades && grades[gradeIndex]) {
+				const gradeNumber = gradeIndex + 1;
+				const classification = determineStudentClassification(
+					grades[gradeIndex],
+					gradeNumber,
+					competitionResults,
+				);
+
+				if (classification) {
+					setValue(`academicRecords.grades.${gradeIndex}.award`, classification, {
+						shouldValidate: false,
+						shouldDirty: true,
+						shouldTouch: false,
+					});
+				}
+			}
+		},
+		[setValue, form],
+	);
+
+	// Watch specific fields for changes
+	useEffect(() => {
+		const subscription = watch((value, { name }) => {
+			if (name?.startsWith('academicRecords.grades.')) {
+				const match = name.match(/academicRecords\.grades\.(\d+)\./);
+				if (match) {
+					const gradeIndex = parseInt(match[1]);
+					// updateClassifications(gradeIndex);
+				}
+			}
+		});
+
+		return () => subscription.unsubscribe();
+	}, [watch, updateClassifications]);
+
+	const onSubmit = async (data: RegistrationFormData) => {
+		try {
+			// Store form values to display in confirmation modal
+			setFormValues(data);
+			console.log('Form values:', data);
+
+			// Open the confirmation modal
+			openConfirmModal();
+		} catch (error) {
+			// Handle validation errors
+			if (error instanceof z.ZodError) {
+				error.errors.forEach(err => {
+					const fieldName = err.path.join('.');
+					form.setError(fieldName as any, {
+						type: 'manual',
+						message: err.message,
+					});
+				});
+
+				// Show error notification
+				showErrorToast('Vui lòng kiểm tra và điền đầy đủ thông tin!');
+
+				// Scroll to first error
+				const firstErrorField = document.querySelector('.mantine-Input-error');
+				firstErrorField?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			}
+		}
 	};
 
 	const onInvalid = (errors: any) => {
 		console.error('Form validation errors:', errors);
+
+		// Show error notification
 		showErrorToast('Vui lòng kiểm tra lại thông tin đã nhập!');
+
+		// Scroll to first error
+		const firstErrorField = document.querySelector('.mantine-Input-error');
+		firstErrorField?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 	};
 
 	const handleConfirmSubmission = async () => {
@@ -300,6 +574,7 @@ export default function RegistrationFormV1() {
 					permanentAddress: formValues.residenceInfo.permanentAddress,
 					temporaryAddress: formValues.residenceInfo.temporaryAddress || null,
 					currentAddress: formValues.residenceInfo.currentAddress,
+					academicRecords: formValues.academicRecords,
 				},
 			});
 
@@ -314,12 +589,10 @@ export default function RegistrationFormV1() {
 				guardianRelationship: formValues.parentInfo.guardianRelationship,
 			});
 
-			// Clear draft data after successful submission
-			// clearAllDraftData();
 			await submitRegistration(formValues);
-			// Close the modal
+			setIsReady(true);
 			closeConfirmModal();
-			// showSuccessToast('Đăng ký thành công!');
+			showSuccessToast('Đăng ký thành công! Bây giờ bạn có thể tải lên các tài liệu cần thiết.');
 		} catch (error: any) {
 			console.error('Error submitting form:', error);
 			showErrorToast(error.message || 'Có lỗi xảy ra khi đăng ký. Vui lòng thử lại!');
@@ -329,14 +602,9 @@ export default function RegistrationFormV1() {
 	};
 
 	// Helper function to render field error
-	const getErrorMessage = (path: string) => {
-		const pathParts = path.split('.');
-		let error: any = errors;
-		for (const part of pathParts) {
-			if (!error[part]) return null;
-			error = error[part];
-		}
-		return error.message;
+	const getErrorMessage = (fieldName: string) => {
+		const fieldError = get(errors, fieldName);
+		return fieldError?.message as string | undefined;
 	};
 
 	// Helper function to create bonus point options
@@ -384,13 +652,18 @@ export default function RegistrationFormV1() {
 								<Controller
 									name='studentInfo.educationDepartment'
 									control={control}
-									render={({ field }) => (
+									render={({ field, fieldState: { error } }) => (
 										<TextInput
 											label='Phòng GDĐT'
 											placeholder='Nhập tên phòng giáo dục và đào tạo'
-											error={getErrorMessage('studentInfo.educationDepartment')}
+											error={error?.message}
 											required
 											{...field}
+											onChange={event => {
+												field.onChange(event);
+												// Trigger validation immediately
+												trigger('studentInfo.educationDepartment');
+											}}
 										/>
 									)}
 								/>
@@ -399,13 +672,20 @@ export default function RegistrationFormV1() {
 								<Controller
 									name='studentInfo.primarySchool'
 									control={control}
-									render={({ field }) => (
+									render={({ field, fieldState: { error, invalid } }) => (
 										<TextInput
 											label='Trường tiểu học'
 											placeholder='Nhập tên trường tiểu học'
-											error={getErrorMessage('studentInfo.primarySchool')}
+											error={error?.message}
 											required
 											{...field}
+											classNames={{
+												input: invalid ? 'border-red-500' : '',
+											}}
+											onChange={event => {
+												field.onChange(event);
+												trigger('studentInfo.primarySchool');
+											}}
 										/>
 									)}
 								/>
@@ -414,11 +694,11 @@ export default function RegistrationFormV1() {
 								<Controller
 									name='studentInfo.grade'
 									control={control}
-									render={({ field }) => (
+									render={({ field, fieldState: { error } }) => (
 										<TextInput
 											label='Lớp'
 											placeholder='Ví dụ: 5A'
-											error={getErrorMessage('studentInfo.grade')}
+											error={error?.message}
 											required
 											{...field}
 										/>
@@ -429,12 +709,8 @@ export default function RegistrationFormV1() {
 								<Controller
 									name='studentInfo.gender'
 									control={control}
-									render={({ field }) => (
-										<Radio.Group
-											label='Giới tính'
-											error={getErrorMessage('studentInfo.gender')}
-											required
-											{...field}>
+									render={({ field, fieldState: { error } }) => (
+										<Radio.Group label='Giới tính' error={error?.message} required {...field}>
 											<Group mt='xs'>
 												<Radio value='male' label='Nam' />
 												<Radio value='female' label='Nữ' />
@@ -447,11 +723,11 @@ export default function RegistrationFormV1() {
 								<Controller
 									name='studentInfo.fullName'
 									control={control}
-									render={({ field }) => (
+									render={({ field, fieldState: { error } }) => (
 										<TextInput
 											label='Họ và tên học sinh'
 											placeholder='VIẾT IN HOA'
-											error={getErrorMessage('studentInfo.fullName')}
+											error={error?.message}
 											required
 											styles={{ input: { textTransform: 'uppercase' } }}
 											{...field}
@@ -463,11 +739,11 @@ export default function RegistrationFormV1() {
 								<Controller
 									name='studentInfo.dateOfBirth'
 									control={control}
-									render={({ field }) => (
+									render={({ field, fieldState: { error } }) => (
 										<DatePickerInput
 											label='Ngày, tháng, năm sinh'
 											placeholder='DD/MM/YYYY'
-											error={getErrorMessage('studentInfo.dateOfBirth')}
+											error={error?.message}
 											required
 											valueFormat='DD/MM/YYYY'
 											locale='vi'
@@ -480,11 +756,11 @@ export default function RegistrationFormV1() {
 								<Controller
 									name='studentInfo.placeOfBirth'
 									control={control}
-									render={({ field }) => (
+									render={({ field, fieldState: { error } }) => (
 										<TextInput
 											label='Nơi sinh'
 											placeholder='Tỉnh/Thành phố'
-											error={getErrorMessage('studentInfo.placeOfBirth')}
+											error={error?.message}
 											required
 											{...field}
 										/>
@@ -495,11 +771,11 @@ export default function RegistrationFormV1() {
 								<Controller
 									name='studentInfo.ethnicity'
 									control={control}
-									render={({ field }) => (
+									render={({ field, fieldState: { error } }) => (
 										<TextInput
 											label='Dân tộc'
 											placeholder='Ví dụ: Kinh'
-											error={getErrorMessage('studentInfo.ethnicity')}
+											error={error?.message}
 											required
 											{...field}
 										/>
@@ -519,11 +795,11 @@ export default function RegistrationFormV1() {
 								<Controller
 									name='residenceInfo.permanentAddress'
 									control={control}
-									render={({ field }) => (
+									render={({ field, fieldState: { error } }) => (
 										<TextInput
 											label='Nơi thường trú'
 											placeholder='Ghi rõ địa chỉ đầy đủ'
-											error={getErrorMessage('residenceInfo.permanentAddress')}
+											error={error?.message}
 											required
 											{...field}
 										/>
@@ -534,11 +810,12 @@ export default function RegistrationFormV1() {
 								<Controller
 									name='residenceInfo.temporaryAddress'
 									control={control}
-									render={({ field }) => (
+									render={({ field, fieldState: { error } }) => (
 										<TextInput
 											label='Nơi tạm trú'
 											placeholder='Ghi rõ địa chỉ đầy đủ (nếu có)'
-											error={getErrorMessage('residenceInfo.temporaryAddress')}
+											error={error?.message}
+											required
 											{...field}
 										/>
 									)}
@@ -548,11 +825,11 @@ export default function RegistrationFormV1() {
 								<Controller
 									name='residenceInfo.currentAddress'
 									control={control}
-									render={({ field }) => (
+									render={({ field, fieldState: { error } }) => (
 										<TextInput
 											label='Nơi ở hiện tại'
 											placeholder='Ghi rõ địa chỉ đầy đủ'
-											error={getErrorMessage('residenceInfo.currentAddress')}
+											error={error?.message}
 											required
 											{...field}
 										/>
@@ -589,12 +866,16 @@ export default function RegistrationFormV1() {
 									<Controller
 										name='parentInfo.fatherName'
 										control={control}
-										render={({ field }) => (
+										render={({ field, fieldState: { error, invalid } }) => (
 											<TextInput
 												label='Họ tên cha'
 												placeholder='Họ và tên của cha'
-												error={getErrorMessage('parentInfo.fatherName')}
+												error={error?.message}
 												{...field}
+												classNames={{
+													input: invalid ? 'border-red-500' : '',
+													label: invalid ? 'text-red-500' : '',
+												}}
 											/>
 										)}
 									/>
@@ -603,11 +884,11 @@ export default function RegistrationFormV1() {
 									<Controller
 										name='parentInfo.fatherBirthYear'
 										control={control}
-										render={({ field }) => (
+										render={({ field, fieldState: { error } }) => (
 											<NumberInput
 												label='Năm sinh'
 												placeholder='Ví dụ: 1980'
-												error={getErrorMessage('parentInfo.fatherBirthYear')}
+												error={error?.message}
 												{...field}
 											/>
 										)}
@@ -617,12 +898,17 @@ export default function RegistrationFormV1() {
 									<Controller
 										name='parentInfo.fatherPhone'
 										control={control}
-										render={({ field }) => (
+										render={({ field, fieldState: { error, invalid } }) => (
 											<TextInput
 												label='Số điện thoại'
 												placeholder='Số điện thoại liên hệ'
-												error={getErrorMessage('parentInfo.fatherPhone')}
+												error={error?.message}
 												{...field}
+												onChange={event => {
+													field.onChange(event);
+													// Validate phone number format immediately
+													trigger('parentInfo.fatherPhone');
+												}}
 											/>
 										)}
 									/>
@@ -631,11 +917,11 @@ export default function RegistrationFormV1() {
 									<Controller
 										name='parentInfo.fatherIdCard'
 										control={control}
-										render={({ field }) => (
+										render={({ field, fieldState: { error } }) => (
 											<TextInput
 												label='Số CCCD'
 												placeholder='Số căn cước công dân'
-												error={getErrorMessage('parentInfo.fatherIdCard')}
+												error={error?.message}
 												{...field}
 											/>
 										)}
@@ -645,11 +931,11 @@ export default function RegistrationFormV1() {
 									<Controller
 										name='parentInfo.fatherOccupation'
 										control={control}
-										render={({ field }) => (
+										render={({ field, fieldState: { error } }) => (
 											<TextInput
 												label='Nghề nghiệp'
 												placeholder='Nghề nghiệp hiện tại'
-												error={getErrorMessage('parentInfo.fatherOccupation')}
+												error={error?.message}
 												{...field}
 											/>
 										)}
@@ -659,11 +945,11 @@ export default function RegistrationFormV1() {
 									<Controller
 										name='parentInfo.fatherWorkplace'
 										control={control}
-										render={({ field }) => (
+										render={({ field, fieldState: { error } }) => (
 											<TextInput
 												label='Nơi công tác'
 												placeholder='Nơi làm việc hiện tại'
-												error={getErrorMessage('parentInfo.fatherWorkplace')}
+												error={error?.message}
 												{...field}
 											/>
 										)}
@@ -682,11 +968,11 @@ export default function RegistrationFormV1() {
 									<Controller
 										name='parentInfo.motherName'
 										control={control}
-										render={({ field }) => (
+										render={({ field, fieldState: { error } }) => (
 											<TextInput
 												label='Họ tên mẹ'
 												placeholder='Họ và tên của mẹ'
-												error={getErrorMessage('parentInfo.motherName')}
+												error={error?.message}
 												{...field}
 											/>
 										)}
@@ -696,11 +982,11 @@ export default function RegistrationFormV1() {
 									<Controller
 										name='parentInfo.motherBirthYear'
 										control={control}
-										render={({ field }) => (
+										render={({ field, fieldState: { error } }) => (
 											<NumberInput
 												label='Năm sinh'
 												placeholder='Ví dụ: 1985'
-												error={getErrorMessage('parentInfo.motherBirthYear')}
+												error={error?.message}
 												{...field}
 											/>
 										)}
@@ -710,11 +996,11 @@ export default function RegistrationFormV1() {
 									<Controller
 										name='parentInfo.motherPhone'
 										control={control}
-										render={({ field }) => (
+										render={({ field, fieldState: { error } }) => (
 											<TextInput
 												label='Số điện thoại'
 												placeholder='Số điện thoại liên hệ'
-												error={getErrorMessage('parentInfo.motherPhone')}
+												error={error?.message}
 												{...field}
 											/>
 										)}
@@ -724,11 +1010,11 @@ export default function RegistrationFormV1() {
 									<Controller
 										name='parentInfo.motherIdCard'
 										control={control}
-										render={({ field }) => (
+										render={({ field, fieldState: { error } }) => (
 											<TextInput
 												label='Số CCCD'
 												placeholder='Số căn cước công dân'
-												error={getErrorMessage('parentInfo.motherIdCard')}
+												error={error?.message}
 												{...field}
 											/>
 										)}
@@ -738,11 +1024,11 @@ export default function RegistrationFormV1() {
 									<Controller
 										name='parentInfo.motherOccupation'
 										control={control}
-										render={({ field }) => (
+										render={({ field, fieldState: { error } }) => (
 											<TextInput
 												label='Nghề nghiệp'
 												placeholder='Nghề nghiệp hiện tại'
-												error={getErrorMessage('parentInfo.motherOccupation')}
+												error={error?.message}
 												{...field}
 											/>
 										)}
@@ -752,11 +1038,11 @@ export default function RegistrationFormV1() {
 									<Controller
 										name='parentInfo.motherWorkplace'
 										control={control}
-										render={({ field }) => (
+										render={({ field, fieldState: { error } }) => (
 											<TextInput
 												label='Nơi công tác'
 												placeholder='Nơi làm việc hiện tại'
-												error={getErrorMessage('parentInfo.motherWorkplace')}
+												error={error?.message}
 												{...field}
 											/>
 										)}
@@ -775,11 +1061,11 @@ export default function RegistrationFormV1() {
 									<Controller
 										name='parentInfo.guardianName'
 										control={control}
-										render={({ field }) => (
+										render={({ field, fieldState: { error } }) => (
 											<TextInput
 												label='Họ tên người giám hộ'
 												placeholder='Họ và tên người giám hộ'
-												error={getErrorMessage('parentInfo.guardianName')}
+												error={error?.message}
 												{...field}
 											/>
 										)}
@@ -789,11 +1075,11 @@ export default function RegistrationFormV1() {
 									<Controller
 										name='parentInfo.guardianBirthYear'
 										control={control}
-										render={({ field }) => (
+										render={({ field, fieldState: { error } }) => (
 											<NumberInput
 												label='Năm sinh'
 												placeholder='Ví dụ: 1970'
-												error={getErrorMessage('parentInfo.guardianBirthYear')}
+												error={error?.message}
 												{...field}
 											/>
 										)}
@@ -803,11 +1089,11 @@ export default function RegistrationFormV1() {
 									<Controller
 										name='parentInfo.guardianPhone'
 										control={control}
-										render={({ field }) => (
+										render={({ field, fieldState: { error } }) => (
 											<TextInput
 												label='Số điện thoại'
 												placeholder='Số điện thoại liên hệ'
-												error={getErrorMessage('parentInfo.guardianPhone')}
+												error={error?.message}
 												{...field}
 											/>
 										)}
@@ -817,11 +1103,11 @@ export default function RegistrationFormV1() {
 									<Controller
 										name='parentInfo.guardianIdCard'
 										control={control}
-										render={({ field }) => (
+										render={({ field, fieldState: { error } }) => (
 											<TextInput
 												label='Số CCCD'
 												placeholder='Số căn cước công dân'
-												error={getErrorMessage('parentInfo.guardianIdCard')}
+												error={error?.message}
 												{...field}
 											/>
 										)}
@@ -831,11 +1117,11 @@ export default function RegistrationFormV1() {
 									<Controller
 										name='parentInfo.guardianOccupation'
 										control={control}
-										render={({ field }) => (
+										render={({ field, fieldState: { error } }) => (
 											<TextInput
 												label='Nghề nghiệp'
 												placeholder='Nghề nghiệp hiện tại'
-												error={getErrorMessage('parentInfo.guardianOccupation')}
+												error={error?.message}
 												{...field}
 											/>
 										)}
@@ -845,11 +1131,11 @@ export default function RegistrationFormV1() {
 									<Controller
 										name='parentInfo.guardianWorkplace'
 										control={control}
-										render={({ field }) => (
+										render={({ field, fieldState: { error } }) => (
 											<TextInput
 												label='Nơi công tác'
 												placeholder='Nơi làm việc hiện tại'
-												error={getErrorMessage('parentInfo.guardianWorkplace')}
+												error={error?.message}
 												{...field}
 											/>
 										)}
@@ -859,11 +1145,11 @@ export default function RegistrationFormV1() {
 									<Controller
 										name='parentInfo.guardianRelationship'
 										control={control}
-										render={({ field }) => (
+										render={({ field, fieldState: { error } }) => (
 											<TextInput
 												label='Quan hệ với học sinh'
 												placeholder='Ví dụ: Ông, Bà, Cô, Chú,...'
-												error={getErrorMessage('parentInfo.guardianRelationship')}
+												error={error?.message}
 												{...field}
 											/>
 										)}
@@ -937,35 +1223,46 @@ export default function RegistrationFormV1() {
 															/>
 														)}
 													/> */}
-													<NativeSelect
-														defaultValue={
-															form.getValues(
-																`competitionResults.${
-																	index * levelOptions.length + levelIndex
-																}.achievement`,
-															) || 'none'
-														}
-														data={achievementOptions[level.value]}
-														onChange={event => {
-															const selectedValue = event.currentTarget.value as
-																| 'none'
-																| 'first'
-																| 'second'
-																| 'third';
-																console.log(competition.competitionId,
-																	level.value,
-																	selectedValue,
-																	index * levelOptions.length + levelIndex);
-																
-															updateCompetitionResults(
-																competition.competitionId,
-																level.value,
-																selectedValue,
-																index * levelOptions.length + levelIndex,
-															);
-														}}
-														disabled={level.disabled}
-														styles={{ input: { minWidth: '140px' } }}
+													<Controller
+														name={`competitionResults.${
+															index * levelOptions.length + levelIndex
+														}.achievement`}
+														control={control}
+														render={({ field, fieldState: { error } }) => (
+															<NativeSelect
+																defaultValue={
+																	form.getValues(
+																		`competitionResults.${
+																			index * levelOptions.length + levelIndex
+																		}.achievement`,
+																	) || 'none'
+																}
+																data={achievementOptions[level.value]}
+																onChange={event => {
+																	const selectedValue = event.currentTarget.value as
+																		| 'none'
+																		| 'first'
+																		| 'second'
+																		| 'third';
+																	console.log(
+																		competition.competitionId,
+																		level.value,
+																		selectedValue,
+																		index * levelOptions.length + levelIndex,
+																	);
+
+																	updateCompetitionResults(
+																		competition.competitionId,
+																		level.value,
+																		selectedValue,
+																		index * levelOptions.length + levelIndex,
+																	);
+																}}
+																disabled={competition.disabledLevel.includes(level.value as string)}
+																styles={{ input: { minWidth: '140px' } }}
+																error={error?.message}
+															/>
+														)}
 													/>
 												</Table.Td>
 											))}
@@ -986,30 +1283,213 @@ export default function RegistrationFormV1() {
 						</Text>
 					</Paper>
 
-					{/* E. ĐIỂM ƯU TIÊN */}
+					{/* Academic Records Table */}
 					<Paper withBorder className='p-4 sm:p-10' radius='md' mb='lg'>
 						<Title order={4} mb='md'>
-							E. ĐIỂM ƯU TIÊN (nếu có)
+							E. ĐIỂM CUỐI NĂM HỌC LỚP 1 ĐẾN LỚP 5
+						</Title>
+
+						<Box className='overflow-x-auto'>
+							<Table
+								striped
+								withTableBorder
+								withColumnBorders
+								withRowBorders
+								mb='md'
+								style={{ minWidth: '800px' }}>
+								<Table.Thead>
+									<Table.Tr>
+										<Table.Th
+											rowSpan={2}
+											style={{ width: '80px', textAlign: 'center', verticalAlign: 'middle' }}>
+											Lớp
+										</Table.Th>
+										<Table.Th
+											colSpan={academicSubjectsConfig.length}
+											style={{ textAlign: 'center' }}>
+											Điểm cuối năm học lớp 1 đến lớp 5
+										</Table.Th>
+										<Table.Th rowSpan={2} style={{ minWidth: '250px', verticalAlign: 'middle' }}>
+											Khen thưởng cuối năm
+											<div
+												style={{ fontStyle: 'italic', fontWeight: 'normal', fontSize: '0.85em' }}>
+												(Nếu học sinh đạt danh hiệu "Học sinh hoàn thành xuất sắc các nội dung học
+												tập và rèn luyện" ghi là HTXS vào cột các lớp tương ứng)
+											</div>
+										</Table.Th>
+									</Table.Tr>
+									<Table.Tr>
+										{academicSubjectsConfig.map(subject => (
+											<Table.Th
+												key={subject.subjectId}
+												style={{ textAlign: 'center', border: '1px solid #dee2e6' }}>
+												{subject.name}
+											</Table.Th>
+										))}
+									</Table.Tr>
+								</Table.Thead>
+								<Table.Tbody>
+									{[1, 2, 3, 4, 5].map((gradeNumber: number) => (
+										<Table.Tr key={gradeNumber}>
+											<Table.Td style={{ textAlign: 'center', fontWeight: 'bold' }}>
+												{gradeNumber}
+											</Table.Td>
+											{academicSubjectsConfig.map(subject => (
+												<Table.Td key={subject.subjectId}>
+													{subject.disabledGrades.includes(gradeNumber) ? (
+														<Text ta='center'>—</Text>
+													) : (
+														<Controller
+															name={`academicRecords.grades.${gradeNumber - 1}.${subject.subjectId}`}
+															control={control}
+															render={({ field, fieldState: { error } }) => (
+																<NumberInput
+																	hideControls
+																	min={0}
+																	max={10}
+																	step={0.1}
+																	error={error?.message}
+																	value={field.value ?? ''}
+																	onChange={(val) => {
+																		// Convert empty string or undefined to undefined, otherwise keep the number
+																		const numValue = val === '' || val === undefined ? undefined : Number(val);
+																		field.onChange(numValue);
+																		// Trigger validation for the current grade
+																		// trigger(`academicRecords.grades.${gradeNumber - 1}`);
+																		trigger(`academicRecords.grades.${gradeNumber - 1}.${subject.subjectId}`);
+																	}}
+																	styles={{
+																		input: {
+																			textAlign: 'center',
+																			backgroundColor: field.value ? '#f0f8ff' : undefined,
+																		},
+																	}}
+																/>
+															)}
+														/>
+													)}
+												</Table.Td>
+											))}
+											<Table.Td>
+												<Controller
+													name={`academicRecords.grades.${gradeNumber - 1}.award`}
+													control={control}
+													render={({ field, fieldState: { error } }) => (
+														<TextInput
+															placeholder='HTXS'
+															error={error?.message}
+															value={field.value || ''}
+															onChange={(e) => field.onChange(e.currentTarget.value)}
+															disabled
+															styles={{
+																input: {
+																	textAlign: 'center',
+																	// backgroundColor: field.value ? '#f0f8ff' : undefined,
+																},
+															}}
+														/>
+													)}
+												/>
+											</Table.Td>
+										</Table.Tr>
+									))}
+								</Table.Tbody>
+							</Table>
+						</Box>
+						<Alert
+							color='blue'
+							title='Phân loại học sinh'
+							icon={<IconAlertCircle size={16} />}
+							mb='md'>
+							<Text size='sm' mb='xs'>
+								Hệ thống sẽ tự động phân loại học sinh dựa trên điểm số các môn học:
+							</Text>
+							<Box pl='md'>
+								<Text size='sm' mb='xs'>
+									<strong>Hoàn Thành Xuất Sắc (HTXS):</strong> Tất cả các môn đều đạt từ 9 đến 10
+									điểm.
+								</Text>
+								<Text size='sm' mb='xs'>
+									<strong>Có Thành Tích Vượt Trội (CTTVT):</strong> Đối với lớp 3-5, môn Toán và
+									Tiếng Việt đạt 10 điểm, môn Tiếng Anh đạt từ 9 điểm trở lên.
+								</Text>
+								<Text size='sm' mb='xs'>
+									<strong>Có Thành Tích Thi đấu (CTTT):</strong> Học sinh đạt giải trong các kỳ thi
+									cấp quốc gia hoặc đạt giải nhất cấp thành phố.
+								</Text>
+								<Text size='sm' c='yellow' fw={700} style={{ fontStyle: 'italic' }}>
+									*Lưu ý: Bảng điểm sẽ được xác minh với hồ sơ gốc của học sinh.
+								</Text>
+							</Box>
+						</Alert>
+
+						<Grid mb='md'>
+							<Grid.Col span={12}>
+								{/* <div className="mb-2 font-medium">Phân loại học sinh:</div> */}
+								{/* <Select
+										readOnly
+										placeholder="Chọn phân loại"
+										data={[
+											{ value: 'HTXS', label: 'Hoàn Thành Xuất Sắc (HTXS)' },
+											{ value: 'CTTVT', label: 'Có Thành Tích Vượt Trội (CTTVT)' },
+											{ value: 'CTTT', label: 'Có Thành Tích Thi đấu (CTTT)' },
+										]}
+										disabled
+										value={(() => {
+											// Find the highest classification across all grades
+											const grades = form.getValues('academicRecords.grades') || [];
+											const allClassifications = grades
+												.map(grade => grade?.award || '')
+												.filter(Boolean);
+												
+											// Priority: HTXS > CTTVT > CTTT
+											if (allClassifications.includes('HTXS')) return 'HTXS';
+											if (allClassifications.includes('CTTVT')) return 'CTTVT';
+											if (allClassifications.includes('CTTT')) return 'CTTT';
+											return null;
+										})()}
+									/> */}
+								{/* {watch('academicRecords.grades').map((grade, index) => (
+									<div key={index}>
+										<Text>{grade.award}</Text>
+									</div>
+								))} */}
+							</Grid.Col>
+						</Grid>
+					</Paper>
+
+					{/* G. ĐIỂM ƯU TIÊN */}
+					<Paper withBorder className='p-4 sm:p-10' radius='md' mb='lg'>
+						<Title order={4} mb='md'>
+							G. ĐIỂM ƯU TIÊN (nếu có)
 						</Title>
 						<Controller
 							name='priorityPoint.type'
 							control={control}
-							render={({ field }) => (
+							render={({ field, fieldState: { error } }) => (
 								<Radio.Group {...field} pl='md'>
 									<Stack>
-										<Radio value='none' label='Không có điểm ưu tiên' />
-										<Radio
-											value='type1'
-											label='Loại 1 (2.0 điểm): Con liệt sĩ, thương binh mất sức ≥81%,...'
-										/>
-										<Radio
-											value='type2'
-											label='Loại 2 (1.5 điểm): Con anh hùng LLVT, con Bà mẹ VN anh hùng, thương binh mất sức <81%,...'
-										/>
-										<Radio
-											value='type3'
-											label='Loại 3 (1.0 điểm): Học sinh hoặc cha/mẹ là người dân tộc thiểu số; vùng khó khăn theo QĐ 861/QĐ-TTg hoặc 497/QĐ-UBDT'
-										/>
+										{priorityPointsConfig.map(priority => (
+											<Radio
+												size='md'
+												className='cursor-pointer'
+												key={priority.value}
+												defaultChecked={priority.value === field.value}
+												value={priority.value}
+												onChange={field.onChange}
+												label={
+													<Text fw={500} size='lg' className='cursor-pointer'>
+														{priority.label}
+													</Text>
+												}
+												description={
+													<Text size='sm' c='dimmed'>
+														{priority.description}
+													</Text>
+												}
+												error={error?.message}
+											/>
+										))}
 									</Stack>
 								</Radio.Group>
 							)}
@@ -1026,11 +1506,11 @@ export default function RegistrationFormV1() {
 								<Controller
 									name='commitment.relationship'
 									control={control}
-									render={({ field }) => (
+									render={({ field, fieldState: { error } }) => (
 										<TextInput
 											label='Quan hệ với học sinh'
 											placeholder='Ví dụ: Cha/Mẹ/Người giám hộ'
-											error={getErrorMessage('commitment.relationship')}
+											error={error?.message}
 											required
 											{...field}
 										/>
@@ -1041,11 +1521,12 @@ export default function RegistrationFormV1() {
 								<Controller
 									name='commitment.signatureDate'
 									control={control}
-									render={({ field }) => (
+									render={({ field, fieldState: { error } }) => (
 										<DatePickerInput
 											label='Ngày tháng năm kê khai'
+											defaultValue={new Date()}
 											placeholder='DD/MM/YYYY'
-											error={getErrorMessage('commitment.signatureDate')}
+											error={error?.message}
 											required
 											valueFormat='DD/MM/YYYY'
 											locale='vi'
@@ -1058,11 +1539,11 @@ export default function RegistrationFormV1() {
 								<Controller
 									name='commitment.guardianName'
 									control={control}
-									render={({ field }) => (
+									render={({ field, fieldState: { error } }) => (
 										<TextInput
-											label='Chữ ký Cha/Mẹ/Người giám hộ'
+											label='Họ tên Cha/Mẹ/Người giám hộ'
 											placeholder='Ghi rõ họ tên'
-											error={getErrorMessage('commitment.guardianName')}
+											error={error?.message}
 											required
 											{...field}
 										/>
@@ -1073,11 +1554,11 @@ export default function RegistrationFormV1() {
 								<Controller
 									name='commitment.applicantName'
 									control={control}
-									render={({ field }) => (
+									render={({ field, fieldState: { error } }) => (
 										<TextInput
-											label='Chữ ký người viết phiếu đăng ký'
+											label='Họ tên người viết phiếu đăng ký'
 											placeholder='Ghi rõ họ tên'
-											error={getErrorMessage('commitment.applicantName')}
+											error={error?.message}
 											required
 											{...field}
 										/>
@@ -1093,20 +1574,33 @@ export default function RegistrationFormV1() {
 							G. THÔNG TIN HỒ SƠ (PHẦN BỔ SUNG)
 						</Title>
 						<Grid pl='md'>
-							<Grid.Col span={{ base: 12, md: 6 }}>
+							{/* <Grid.Col span={{ base: 12, md: 6 }}>
 								<Controller
 									name='additionalInfo.fileId'
 									control={control}
-									render={({ field }) => (
-										<TextInput label='Mã hồ sơ' placeholder='LL...' {...field} />
+									render={({ field, fieldState: { error } }) => (
+										<TextInput
+											label='Mã hồ sơ'
+											placeholder='LL...'
+											disabled
+											{...field}
+											error={error?.message}
+										/>
 									)}
 								/>
-							</Grid.Col>
+							</Grid.Col> */}
 							<Grid.Col span={{ base: 12, md: 6 }}>
 								<Controller
 									name='additionalInfo.studentCode'
 									control={control}
-									render={({ field }) => <TextInput label='Mã học sinh theo CSDL BGD' {...field} />}
+									render={({ field, fieldState: { error } }) => (
+										<TextInput
+											label='Mã học sinh theo CSDL BGD'
+											required
+											{...field}
+											error={error?.message}
+										/>
+									)}
 								/>
 							</Grid.Col>
 							{/* <Grid.Col span={{ base: 12, md: 6 }}>
@@ -1114,38 +1608,58 @@ export default function RegistrationFormV1() {
 									name='additionalInfo.password'
 									control={control}
 									render={({ field }) => <TextInput label='Mật khẩu' type='password' {...field} />}
-								/>
-							</Grid.Col> */}
+								</Grid.Col> */}
 							<Grid.Col span={{ base: 12, md: 6 }}>
 								<Controller
 									name='additionalInfo.identificationNumber'
 									control={control}
-									render={({ field }) => <TextInput label='Số định danh học sinh' {...field} />}
+									render={({ field, fieldState: { error } }) => (
+										<TextInput
+											label='Số định danh học sinh'
+											required
+											{...field}
+											error={error?.message}
+										/>
+									)}
 								/>
 							</Grid.Col>
 						</Grid>
 					</Paper>
 
-					<Group justify='start' mt='xl'>
+					<Group justify='start' my='xl'>
 						<Button type='submit' size='lg' loading={isSubmitting}>
 							Nộp phiếu đăng ký
 						</Button>
 					</Group>
 				</form>
+
+				<Space h='xl' />
+
+								{/* {!isReady && (
+									<Alert
+
+								)} */}
+				<DocumentUpload isReady={isReady} />
 			</Paper>
 
 			{/* Confirmation Modal */}
 			<Modal
 				opened={confirmModalOpened}
 				onClose={closeConfirmModal}
-				title='Xác nhận nộp phiếu đăng ký'
-				size='lg'
+				title={
+					<Text fw={500} size='lg'>
+						Xác nhận nộp phiếu đăng ký
+					</Text>
+				}
+				size='1000' // kích thước cơ bản theo viewport width
+				maw={1000} // tối đa không vượt quá 1000px
+				miw='320px' // tối thiểu (tuỳ bạn), đủ cho mobile
 				centered>
 				{formValues && (
 					<>
 						<Text mb='md'>Vui lòng xác nhận thông tin trước khi nộp phiếu đăng ký:</Text>
 
-						<Paper withBorder className='p-4 sm:p-10' radius='md' mb='md'>
+						<Paper withBorder className='p-4' radius='md' mb='md'>
 							<Title order={5} mb='xs'>
 								Thông tin học sinh
 							</Title>
@@ -1189,7 +1703,7 @@ export default function RegistrationFormV1() {
 							</List>
 						</Paper>
 
-						<Paper withBorder className='p-4 sm:p-10' radius='md' mb='md'>
+						<Paper withBorder className='p-4' radius='md' mb='md'>
 							<Title order={5} mb='xs'>
 								Thông tin cư trú
 							</Title>
@@ -1215,7 +1729,7 @@ export default function RegistrationFormV1() {
 							</List>
 						</Paper>
 
-						<Paper withBorder className='p-4 sm:p-10' radius='md' mb='md'>
+						<Paper withBorder className='p-4' radius='md' mb='md'>
 							<Title order={5} mb='xs'>
 								Thông tin liên hệ
 							</Title>
@@ -1302,6 +1816,38 @@ export default function RegistrationFormV1() {
 							</Grid>
 						</Paper>
 
+						<Paper withBorder className='p-4' radius='md' mb='md'>
+							<Title order={5} mb='xs'>
+								Kết quả học tập (Điểm cuối năm học lớp 1 đến lớp 5)
+							</Title>
+							<Table withTableBorder withColumnBorders>
+								<Table.Thead>
+									<Table.Tr>
+										<Table.Th>Lớp</Table.Th>
+										<Table.Th>Môn Toán</Table.Th>
+										<Table.Th>Tiếng Việt</Table.Th>
+										<Table.Th>Tiếng Anh</Table.Th>
+										<Table.Th>Khoa học</Table.Th>
+										<Table.Th>Lịch sử và Địa lí</Table.Th>
+										{/* <Table.Th>Khen thưởng</Table.Th> */}
+									</Table.Tr>
+								</Table.Thead>
+								<Table.Tbody>
+									{formValues.academicRecords.grades.map((grade, index) => (
+										<Table.Tr key={index}>
+											<Table.Td>{grade.grade}</Table.Td>
+											<Table.Td>{grade.math ?? '—'}</Table.Td>
+											<Table.Td>{grade.vietnamese ?? '—'}</Table.Td>
+											<Table.Td>{grade.grade <= 2 ? '—' : grade.english ?? '—'}</Table.Td>
+											<Table.Td>{grade.grade === 1 ? '—' : grade.science ?? '—'}</Table.Td>
+											<Table.Td>{grade.grade <= 3 ? '—' : grade.history ?? '—'}</Table.Td>
+											{/* <Table.Td>{grade.award || '—'}</Table.Td> */}
+										</Table.Tr>
+									))}
+								</Table.Tbody>
+							</Table>
+						</Paper>
+
 						<Group justify='end' mt='xl'>
 							<Button variant='outline' onClick={closeConfirmModal}>
 								Hủy
@@ -1313,6 +1859,7 @@ export default function RegistrationFormV1() {
 					</>
 				)}
 			</Modal>
+			<FeedbackCard />
 		</Container>
 	);
 }

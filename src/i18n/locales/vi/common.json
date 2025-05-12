@@ -75,7 +75,7 @@
             "register_button": "Tạo tài khoản",
             "timeline_title": "Thời gian tuyển sinh",
             "timeline": {
-                "registration": "{{start}} - {{end}}",
+                "registration": "{start} - {end}",
                 "registration_start": "01/06/2025",
                 "registration_end": "30/06/2025"
             }
@@ -238,6 +238,7 @@
             "pending": "Đang chờ xác minh",
             "view": "Xem",
             "uploadSuccess": "Tải lên tài liệu thành công",
+            "uploadDocuments": "Tải lên tài liệu",
             "multipleCertificatesUploaded": "Tải lên các chứng chỉ thành công",
             "uploadFailed": "Không thể tải lên tài liệu",
             "invalidFile": "Định dạng hoặc kích thước tệp không hợp lệ",
@@ -245,7 +246,27 @@
             "transcriptTitle": "Học bạ",
             "transcriptInstruction": "Tải lên học bạ của bạn ở định dạng PDF",
             "certificateTitle": "Chứng chỉ thành tích",
-            "certificateInstruction": "Tải lên bất kỳ chứng chỉ, giải thưởng hoặc thành tích khác (không bắt buộc)"
+            "certificateInstruction": "Tải lên các chứng chỉ, giấy chứng nhận được cấp bởi Bộ Giáo dục và Đào tạo hoặc Sở Giáo dục và Đào tạo (không bắt buộc)",
+            "duplicateFile": "File này đã được chọn",
+            "duplicateFileNamed": "File \"{fileName}\" đã được chọn",
+            "notImageFile": "File \"{fileName}\" không phải là file ảnh. Chỉ chấp nhận file ảnh cho chứng chỉ.",
+            "supportedImageFormats": "Định dạng được hỗ trợ: JPG, PNG (tối đa 10MB)",
+            "noFilesSelected": "Vui lòng chọn ít nhất một file để tải lên",
+            "selectedFiles": "Tài liệu đã chọn",
+            "oneTranscript": "1 học bạ",
+            "multipleCertificates": "{count} chứng chỉ",
+            "and": "và",
+            "uploadAll": "Tải lên tất cả",
+            
+            "file_invalid_type": "Định dạng file không được hỗ trợ",
+            "file_too_large": "File quá lớn. Kích thước tối đa là {size}MB",
+            "file_too_small": "File quá nhỏ. Kích thước tối thiểu là {size}KB",
+            "too_many_files": "Số lượng file vượt quá giới hạn cho phép",
+            
+            "required": "Trường này là bắt buộc",
+            "min_file_size": "File phải có kích thước tối thiểu {size}KB",
+            "max_file_size": "File không được vượt quá {size}MB",
+            "accepted_file_types": "Chỉ chấp nhận định dạng: {types}"
         },
         "status": {
             "userInfo": "Thông tin Phụ huynh",
@@ -407,6 +428,55 @@
             "confirmCheckbox": "Tôi xác nhận đã kiểm tra các tài liệu gốc và xác minh danh tính của học sinh",
             "rejectButton": "Từ chối",
             "approveButton": "Chấp nhận"
+        }
+    },
+    "validation": {
+        "required": "Trường này là bắt buộc",
+        "invalid_type": "Kiểu dữ liệu không hợp lệ",
+        "min": "Giá trị tối thiểu là {min}",
+        "max": "Giá trị tối đa là {max}",
+        "min_length": "Độ dài tối thiểu là {min} ký tự",
+        "max_length": "Độ dài tối đa là {max} ký tự",
+        "student": {
+            "educationDepartment": "Phòng GDĐT không được để trống",
+            "primarySchool": "Trường tiểu học không được để trống",
+            "grade": "Lớp không được để trống",
+            "gender": "Vui lòng chọn giới tính",
+            "fullName": "Họ và tên học sinh không được để trống",
+            "dateOfBirth": {
+                "required": "Ngày sinh không được để trống",
+                "invalid": "Ngày sinh không hợp lệ"
+            },
+            "placeOfBirth": "Nơi sinh không được để trống",
+            "ethnicity": "Dân tộc không được để trống"
+        },
+        "residence": {
+            "permanentAddress": "Địa chỉ thường trú không được để trống",
+            "currentAddress": "Địa chỉ hiện tại không được để trống"
+        },
+        "parent": {
+            "atLeastOne": "Vui lòng cung cấp thông tin của ít nhất một người (cha, mẹ hoặc người giám hộ)"
+        },
+        "priority": {
+            "type": "Vui lòng chọn loại ưu tiên hợp lệ"
+        },
+        "competition": {
+            "competitionId": "Vui lòng chọn cuộc thi",
+            "level": "Vui lòng chọn cấp thi đấu",
+            "achievement": "Vui lòng chọn thành tích",
+            "year": {
+                "min": "Năm không hợp lệ, tối thiểu là 2005",
+                "max": "Năm không được lớn hơn năm hiện tại"
+            }
+        },
+        "commitment": {
+            "relationship": "Mối quan hệ với học sinh không được để trống",
+            "signatureDate": {
+                "required": "Ngày ký không được để trống",
+                "invalid": "Ngày ký không hợp lệ"
+            },
+            "guardianName": "Tên người giám hộ không được để trống",
+            "applicantName": "Tên người đăng ký không được để trống"
         }
     }
 }

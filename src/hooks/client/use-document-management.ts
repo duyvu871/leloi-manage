@@ -12,13 +12,13 @@ export const useDocumentManagement = ({ applicationId }: UseDocumentManagementPr
   const [extractedData, setExtractedData] = useState<Record<number, ExtractedData>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { showErrorToast, showSuccessToast } = useToast();
+  // const { showErrorToast, showSuccessToast } = useToast();
   // Load all documents for an application
   const loadDocuments = useCallback(async (appId?: number) => {
     const targetAppId = appId || applicationId;
     if (!targetAppId) {
       setError('Application ID is required to load documents');
-      showErrorToast('Application ID is required to load documents');
+      // showErrorToast('Application ID is required to load documents');
       return;
     }
     
@@ -44,18 +44,18 @@ export const useDocumentManagement = ({ applicationId }: UseDocumentManagementPr
     } catch (err) {
       console.error('Failed to load documents:', err);
       setError(err instanceof Error ? err.message : 'Failed to load documents');
-      showErrorToast('Không thể tải tài liệu. Vui lòng thử lại sau.');
+      // showErrorToast('Không thể tải tài liệu. Vui lòng thử lại sau.');
     } finally {
       setIsLoading(false);
     }
   }, [applicationId]);
   
   // Upload a document and process it
-  const uploadDocument = useCallback(async (file: File, type: string, appId?: number) => {
+  const uploadDocument = useCallback(async (files: File[], type: string, appId?: number) => {
     const targetAppId = appId || applicationId;
     if (!targetAppId) {
       setError('Application ID is required to upload documents');
-      showErrorToast('Không thể tải lên tài liệu: Thiếu ID đơn đăng ký');
+      // showErrorToast('Không thể tải lên tài liệu: Thiếu ID đơn đăng ký');
       return null;
     }
     
@@ -63,20 +63,20 @@ export const useDocumentManagement = ({ applicationId }: UseDocumentManagementPr
     setError(null);
     
     try {
-      const response = await documentApi.uploadAndProcessDocument(targetAppId, file, type);
+      const response = await documentApi.uploadAndProcessDocument(targetAppId, files, type);
       
       // Note: The server is processing the document, so we don't receive extractedData immediately
       // We'll need to reload documents after upload to get the updated list
-      showSuccessToast('Tài liệu đã được tải lên thành công');
+      // showSuccessToast('Tài liệu đã được tải lên thành công');
       
       // After successful upload, reload the documents list
-      await loadDocuments(targetAppId);
+      // await loadDocuments(targetAppId);
       
       return response;
     } catch (err) {
       console.error('Failed to upload document:', err);
       setError(err instanceof Error ? err.message : 'Failed to upload document');
-      showErrorToast('Không thể tải lên tài liệu. Vui lòng thử lại sau.');
+      // showErrorToast('Không thể tải lên tài liệu. Vui lòng thử lại sau.');
       return null;
     } finally {
       setIsLoading(false);
@@ -106,17 +106,17 @@ export const useDocumentManagement = ({ applicationId }: UseDocumentManagementPr
         return newMap;
       });
       
-      showSuccessToast(
-        isVerified 
-          ? 'Dữ liệu đã được xác minh thành công' 
-          : 'Dữ liệu đã được đánh dấu là không xác minh'
-      );
+      // showSuccessToast(
+      //   isVerified 
+      //     ? 'Dữ liệu đã được xác minh thành công' 
+      //     : 'Dữ liệu đã được đánh dấu là không xác minh'
+      // );
       
       return updatedData;
     } catch (err) {
       console.error('Failed to verify extracted data:', err);
       setError(err instanceof Error ? err.message : 'Failed to verify extracted data');
-      showErrorToast('Không thể cập nhật trạng thái xác minh. Vui lòng thử lại sau.');
+      // showErrorToast('Không thể cập nhật trạng thái xác minh. Vui lòng thử lại sau.');
       return null;
     } finally {
       setIsLoading(false);
