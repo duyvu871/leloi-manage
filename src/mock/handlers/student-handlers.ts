@@ -1,7 +1,8 @@
-import { Student } from '@type/student';
+// import { Student } from '@type/student';
 import { Application } from '@type/application';
 // import {mockStudents} from '../data/students';
 import { mockApplications } from '../data/applications';
+import { Student } from '@/schemas/user/dto';
 
 // Mảng lưu trữ dữ liệu học sinh
 let studentData: any[] = [];
@@ -23,7 +24,7 @@ export const getStudentById = (id: string) => {
 // Hàm tạo học sinh mới
 export const createStudent = (student: Omit<Student, 'id'>) => {
   const newStudent: Student = {
-    id: Math.random().toString(36).substr(2, 9),
+    id: parseInt(Math.random().toString(36).substr(2, 9)),
     ...student,
   };
   studentData.push(newStudent);
