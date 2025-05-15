@@ -22,6 +22,10 @@ export const timelineItemSchema = z.object({
   startDate: z.string().datetime({
     message: 'Start date must be a valid date'
   }),
+  type: z.enum(['registration', 'competition', 'other'], { 
+    required_error: 'Type is required',
+    invalid_type_error: 'Type must be either "registration", "competition", or "other"'
+  }),
   endDate: z.string().datetime({
     message: 'End date must be a valid date'
   }),

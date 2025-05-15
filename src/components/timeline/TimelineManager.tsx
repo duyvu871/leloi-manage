@@ -187,6 +187,8 @@ export default function TimelineManager() {
     try {
       setIsLoading(true);
 
+      console.log('data', data);
+      
       // Validate all links before submitting
       const newLinkErrors = data.links.map(link => ({
         text: !link.text ? 'Tên liên kết không được để trống' : undefined,
